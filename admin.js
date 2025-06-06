@@ -5,7 +5,7 @@ const api = new ApiService();
 
 // Configuration de sécurité
 const ADMIN_USERNAME = 'admin';
-// Le mot de passe haché avec bcrypt (équivalent à 'lemarais2024')
+// Le mot de passe haché avec bcrypt 
 const ADMIN_PASSWORD_HASH = '$2b$10$YourHashedPasswordHere';
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes en millisecondes
