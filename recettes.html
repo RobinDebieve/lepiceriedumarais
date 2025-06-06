@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Découvrez nos délicieuses recettes faciles à réaliser avec les produits de L'Épicerie du Marais à Quiévrain. Des idées de plats simples et savoureux pour toute la famille.">
+    <meta name="keywords" content="recettes Quiévrain, recettes faciles, cuisine pas chère, idées repas Quiévrain, recettes économiques">
+    <title>Nos Recettes - L'Épicerie du Marais à Quiévrain</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/logo.png" alt="L'Épicerie du Marais">
+            </a>
+        </div>
+        <button class="burger-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links">
+            <a href="produits.html">Produits</a>
+            <a href="recettes.html">Recettes</a>
+        </div>
+    </nav>
+
+    <div class="recipes-page">
+        <h1>Nos Recettes</h1>
+        <div class="recipes-grid" id="recipesContainer">
+            <!-- Les recettes seront ajoutées ici dynamiquement -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>L'Épicerie du Marais</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 15 Rue du Marais, 7380 Quiévrain</p>
+                <p><i class="fas fa-clock"></i> Lundi - Samedi : 9h - 18h</p>
+                <p><i class="fas fa-phone"></i> 065 750 858</p>
+            </div>
+            <div class="footer-nav">
+                <h3>Navigation</h3>
+                <a href="index.html">Accueil</a>
+                <a href="produits.html">Nos Produits</a>
+                <a href="recettes.html">Nos Recettes</a>
+            </div>
+            <div class="footer-social">
+                <h3>Suivez-nous</h3>
+                <a href="https://facebook.com" class="social-link" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 L'Épicerie du Marais - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script src="recipes.js"></script>
+    <script>
+        // Fonction pour basculer l'affichage des détails
+        function toggleDetails(button) {
+            const content = button.nextElementSibling;
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            
+            button.setAttribute('aria-expanded', !isExpanded);
+            content.hidden = isExpanded;
+        }
+    </script>
+</body>
+</html> 

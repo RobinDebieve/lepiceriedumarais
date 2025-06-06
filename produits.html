@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Découvrez notre large gamme de produits à L'Épicerie du Marais à Quiévrain. Épicerie, surgelés, boissons, confiseries et produits du quotidien à prix abordables.">
+    <meta name="keywords" content="produits épicerie Quiévrain, alimentation pas chère, épicerie pas chère, surgelés Quiévrain, boissons Quiévrain, confiseries Quiévrain">
+    <title>Nos Produits - L'Épicerie du Marais à Quiévrain</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/logo.png" alt="L'Épicerie du Marais">
+            </a>
+        </div>
+        <button class="burger-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links">
+            <a href="produits.html">Produits</a>
+            <a href="recettes.html">Recettes</a>
+        </div>
+    </nav>
+
+    <main class="products-page">
+        <h1>Nos produits</h1>
+
+        <section class="featured-product">
+            <h2>Produit coup de coeur</h2>
+            <div class="featured-content">
+                <div class="featured-image">
+                    <img src="images/bueno.jpg" alt="Glace Bueno">
+                </div>
+                <div class="featured-info">
+                    <h3>Glace Kinder Bueno</h3>
+                    <p>Découvrez LA nouveauté glacée de l'été ! Une glace onctueuse au goût de Kinder Bueno, avec des morceaux de gaufrette croustillante et un cœur de chocolat noisette. Un délice rafraîchissant qui ravira les petits comme les grands.</p>
+                    <p class="price">4,90€</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="categories-grid">
+            <div class="category-card">
+                <div class="card-header">
+                    <h2>Boissons</h2>
+                    <img src="images/boissons.jpg" alt="Catégorie Boissons">
+                    <button class="toggle-btn" aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="product-list" hidden>
+                    <ul>
+                        <li>Eaux minérales</li>
+                        <li>Sodas</li>
+                        <li>Jus de fruits</li>
+                        <li>Vins & Spiritueux</li>
+                        <li>Bières</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="category-card">
+                <div class="card-header">
+                    <h2>Goûters & Douceurs</h2>
+                    <img src="images/gateaux.jpg" alt="Catégorie Goûters & Douceurs">
+                    <button class="toggle-btn" aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="product-list" hidden>
+                    <ul>
+                        <li>Biscuits</li>
+                        <li>Chocolats</li>
+                        <li>Bonbons</li>
+                        <li>Gâteaux</li>
+                        <li>Viennoiseries</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="category-card">
+                <div class="card-header">
+                    <h2>Épicerie Sèche</h2>
+                    <img src="images/epicerie.jpg" alt="Catégorie Épicerie Sèche">
+                    <button class="toggle-btn" aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="product-list" hidden>
+                    <ul>
+                        <li>Pâtes & Riz</li>
+                        <li>Conserves</li>
+                        <li>Huiles & Condiments</li>
+                        <li>Épices</li>
+                        <li>Petit-déjeuner</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="category-card">
+                <div class="card-header">
+                    <h2>Frais & Surgelés</h2>
+                    <img src="images/frais.jpg" alt="Catégorie Frais & Surgelés">
+                    <button class="toggle-btn" aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="product-list" hidden>
+                    <ul>
+                        <li>Produits laitiers</li>
+                        <li>Viandes</li>
+                        <li>Poissons</li>
+                        <li>Légumes surgelés</li>
+                        <li>Glaces & Desserts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>L'Épicerie du Marais</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 15 Rue du Marais, 7380 Quiévrain</p>
+                <p><i class="fas fa-clock"></i> Lundi - Samedi : 9h - 18h</p>
+                <p><i class="fas fa-phone"></i> 065 750 858</p>
+            </div>
+            <div class="footer-nav">
+                <h3>Navigation</h3>
+                <a href="index.html">Accueil</a>
+                <a href="produits.html">Nos Produits</a>
+                <a href="recettes.html">Nos Recettes</a>
+            </div>
+            <div class="footer-social">
+                <h3>Suivez-nous</h3>
+                <a href="https://facebook.com" class="social-link" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 L'Épicerie du Marais - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script src="products.js"></script>
+</body>
+</html>

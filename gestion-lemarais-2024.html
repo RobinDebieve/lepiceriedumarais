@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Le Marais</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-page">
+        <!-- Formulaire de connexion -->
+        <div class="login-container" id="loginForm">
+            <h1>Administration</h1>
+            <form id="authForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="auth-button">Se connecter</button>
+            </form>
+        </div>
+
+        <!-- Interface d'administration (cachée par défaut) -->
+        <div class="admin-container" id="adminInterface" style="display: none;">
+            <div class="admin-header">
+                <h1>Gestion des contenus</h1>
+                <button onclick="logout()" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
+            </div>
+            
+            <!-- Section Produit Coup de Coeur -->
+            <div class="featured-section">
+                <h2>Produit coup de cœur</h2>
+                <form id="featuredProductForm" class="featured-form">
+                    <div class="form-group">
+                        <label for="featuredTitle">Titre du produit</label>
+                        <input type="text" id="featuredTitle" name="featuredTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="featuredDescription">Description</label>
+                        <textarea id="featuredDescription" name="featuredDescription" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="featuredPrice">Prix (€)</label>
+                        <input type="text" id="featuredPrice" name="featuredPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="featuredImage">Image du produit</label>
+                        <input type="file" id="featuredImage" accept="image/*">
+                        <div id="featuredImagePreview"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="save-button">Mettre à jour</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Section Promos -->
+            <div class="promos-section">
+                <h2>Promos du moment</h2>
+                <button id="addPromoButton" class="add-button">
+                    <i class="fas fa-plus"></i> Ajouter une promo
+                </button>
+                
+                <!-- Liste des promos -->
+                <div id="promosList" class="promos-list">
+                    <!-- Les promos seront ajoutées ici dynamiquement -->
+                </div>
+
+                <!-- Formulaire d'ajout/édition de promo (caché par défaut) -->
+                <form id="promoForm" class="promo-form" style="display: none;">
+                    <input type="hidden" id="promoId">
+                    <div class="form-group">
+                        <label for="promoTitle">Titre de la promotion</label>
+                        <input type="text" id="promoTitle" name="promoTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="promoDescription">Description</label>
+                        <textarea id="promoDescription" name="promoDescription" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="promoImage">Image de la promotion</label>
+                        <input type="file" id="promoImage" accept="image/*">
+                        <div id="promoImagePreview"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="save-button">Enregistrer</button>
+                        <button type="button" class="cancel-button" onclick="document.getElementById('promoForm').style.display='none'">Annuler</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Section Gestion des Recettes -->
+            <div class="recipes-section">
+                <h2>Gestion des recettes</h2>
+                <div class="admin-actions">
+                    <button class="admin-button" onclick="showRecipeForm()">
+                        <i class="fas fa-plus"></i> Ajouter une recette
+                    </button>
+                </div>
+
+                <!-- Liste des recettes existantes -->
+                <div class="recipes-list">
+                    <!-- Les recettes seront ajoutées ici dynamiquement -->
+                </div>
+
+                <!-- Formulaire d'ajout/modification de recette -->
+                <div class="recipe-form" id="recipeForm" style="display: none;">
+                    <h2>Ajouter une recette</h2>
+                    <form id="addRecipeForm">
+                        <div class="form-group">
+                            <label for="recipeName">Nom de la recette</label>
+                            <input type="text" id="recipeName" name="recipeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prepTime">Temps de préparation (minutes)</label>
+                            <input type="number" id="prepTime" name="prepTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cookTime">Temps de cuisson (minutes)</label>
+                            <input type="number" id="cookTime" name="cookTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="servings">Nombre de personnes</label>
+                            <input type="number" id="servings" name="servings" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipeImage">Image de la recette :</label>
+                            <input type="file" id="recipeImage" accept="image/*">
+                            <div id="imagePreview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ingredients">Ingrédients (un par ligne)</label>
+                            <textarea id="ingredients" name="ingredients" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="instructions">Instructions (une par ligne)</label>
+                            <textarea id="instructions" name="instructions" rows="5" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">Enregistrer</button>
+                            <button type="button" class="cancel-button" onclick="hideRecipeForm()">Annuler</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="recipes.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html> 
