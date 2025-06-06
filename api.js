@@ -1,6 +1,6 @@
 class ApiService {
     constructor() {
-        this.API_KEY = '$2a$10$4UYdz05Raxn/Ly3y4y6p/u649fUdDaQg6XjHlBtlTuZIxgYH.okca';
+        this.API_KEY = '$2a$10$1EDNyeDh8g9NUlSg9MVIa./bjlnUpYkjLCSKpHLAhVJyRjI6J127C';
         this.BIN_ID = '6842aeda8561e97a50204111';
         this.API_URL = `https://api.jsonbin.io/v3/b/${this.BIN_ID}`;
     }
