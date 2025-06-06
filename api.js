@@ -1,44 +1,55 @@
 class ApiService {
     constructor() {
-        // Remplacez YOUR_API_KEY par votre clé API JSONBin.io
         this.API_KEY = '$2a$10$4UYdz05Raxn/Ly3y4y6p/u649fUdDaQg6XjHlBtlTuZIxgYH.okca';
-        // ID du bin JSONBin.io
         this.BIN_ID = '6842aeda8561e97a50204111';
-        this.BASE_URL = 'https://api.jsonbin.io/v3/b';
+        this.API_URL = `https://api.jsonbin.io/v3/b/${this.BIN_ID}`;
     }
 
     async getData() {
         try {
-            const response = await fetch(`${this.BASE_URL}/${this.BIN_ID}/latest`, {
+            console.log('Fetching data from JSONBin.io...');
+            const response = await fetch(this.API_URL, {
                 method: 'GET',
                 headers: {
-                    'X-Master-Key': this.API_KEY,
-                    'Content-Type': 'application/json'
+                    'X-Master-Key': this.API_KEY
                 }
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log('Data received:', data);
             return data.record;
         } catch (error) {
-            console.error('Erreur lors de la récupération des données:', error);
-            return null;
+            console.error('Error fetching data:', error);
+            return defaultData;
         }
     }
 
-    async updateData(newData) {
+    async updateData(data) {
         try {
-            const response = await fetch(`${this.BASE_URL}/${this.BIN_ID}`, {
+            console.log('Updating data on JSONBin.io...', data);
+            const response = await fetch(this.API_URL, {
                 method: 'PUT',
                 headers: {
-                    'X-Master-Key': this.API_KEY,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': this.API_KEY
                 },
-                body: JSON.stringify(newData)
+                body: JSON.stringify(data)
             });
-            const data = await response.json();
-            return data.record;
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Data updated successfully:', result);
+            return result;
         } catch (error) {
-            console.error('Erreur lors de la mise à jour des données:', error);
-            return null;
+            console.error('Error updating data:', error);
+            throw error;
         }
     }
 }
