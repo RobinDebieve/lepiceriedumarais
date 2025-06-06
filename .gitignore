@@ -23,4 +23,11 @@ yarn-error.log*
 
 # Fichiers de cache
 .cache/
-.temp/ 
+.temp/
+
+# Configuration files
+config.js
+
+# Security
+*.pem
+*.key 

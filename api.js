@@ -1,6 +1,8 @@
 class ApiService {
     constructor() {
-        this.API_KEY = '$2a$10$1EDNyeDh8g9NUlSg9MVIa./bjlnUpYkjLCSKpHLAhVJyRjI6J127C';
+        // La clé API est maintenant stockée dans un fichier de configuration séparé
+        this.config = window.APP_CONFIG || {};
+        this.API_KEY = this.config.JSONBIN_API_KEY;
         this.BIN_ID = '6842aeda8561e97a50204111';
         this.API_URL = `https://api.jsonbin.io/v3/b/${this.BIN_ID}`;
     }

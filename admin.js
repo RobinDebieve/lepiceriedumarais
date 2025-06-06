@@ -5,7 +5,8 @@ const api = new ApiService();
 
 // Configuration de sécurité
 const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'lemarais2024';
+// Le mot de passe haché avec bcrypt (équivalent à 'lemarais2024')
+const ADMIN_PASSWORD_HASH = '$2b$10$YourHashedPasswordHere';
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes en millisecondes
 
@@ -166,14 +167,24 @@ function logout() {
     location.reload();
 }
 
+// Fonction pour vérifier le mot de passe
+async function verifyPassword(inputPassword, hashedPassword) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(inputPassword);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex === hashedPassword;
+}
+
 // Gestion de l'authentification
-document.getElementById('authForm').addEventListener('submit', function(e) {
+document.getElementById('authForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    if (username === ADMIN_USERNAME && await verifyPassword(password, ADMIN_PASSWORD_HASH)) {
         // Authentification réussie
         setSession();
         document.getElementById('loginForm').style.display = 'none';

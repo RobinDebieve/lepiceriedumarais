@@ -31,6 +31,21 @@ git clone https://github.com/votre-username/lepiceriedumarais.git
 
 ## Configuration
 
+Pour configurer le projet, suivez ces étapes :
+
+1. Copiez le fichier `config.example.js` en `config.js` :
+   ```bash
+   cp config.example.js config.js
+   ```
+
+2. Modifiez le fichier `config.js` avec vos clés API :
+   - Remplacez `VOTRE_CLE_API_ICI` par votre clé API JSONBin.io
+
+⚠️ **Important** :
+- Ne committez jamais le fichier `config.js` dans le dépôt Git
+- Gardez vos clés API secrètes
+- Si vous exposez accidentellement une clé API, régénérez-la immédiatement
+
 Pour l'interface d'administration :
 - Accédez à `/gestion-lemarais-2024.html`
 - Identifiants par défaut :
