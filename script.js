@@ -206,4 +206,4 @@ function initializeCarousel() {
             updateCarousel(true);
         }
     }
-} 
+}
