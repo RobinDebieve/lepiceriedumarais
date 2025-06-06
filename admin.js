@@ -289,12 +289,12 @@ async function loadRecipes() {
         const editButton = document.createElement('button');
         editButton.className = 'action-button';
         editButton.innerHTML = '<i class="fas fa-edit"></i>';
-        editButton.onclick = () => editRecipe(index);
+        editButton.addEventListener('click', () => editRecipe(index));
         
         const deleteButton = document.createElement('button');
         deleteButton.className = 'action-button';
         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteButton.onclick = () => deleteRecipeItem(index);
+        deleteButton.addEventListener('click', () => deleteRecipeItem(index));
         
         actionsDiv.appendChild(editButton);
         actionsDiv.appendChild(deleteButton);
@@ -439,45 +439,43 @@ async function loadPromosList() {
     promos.forEach(promo => {
         const promoElement = document.createElement('div');
         promoElement.className = 'promo-item';
-        promoElement.innerHTML = `
-            <img src="${promo.image}" alt="${promo.title}" style="width: 100px; height: 100px; object-fit: cover;">
-            <div class="promo-info">
-                <h3>${escapeHtml(promo.title)}</h3>
-                <p>${escapeHtml(promo.description)}</p>
-            </div>
-            <div class="promo-actions">
-                <button onclick="editPromoForm(${promo.id})" class="edit-button">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="deletePromoConfirm(${promo.id})" class="delete-button">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
+        
+        const img = document.createElement('img');
+        img.src = promo.image;
+        img.alt = promo.title;
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.objectFit = 'cover';
+        
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'promo-info';
+        infoDiv.innerHTML = `
+            <h3>${escapeHtml(promo.title)}</h3>
+            <p>${escapeHtml(promo.description)}</p>
         `;
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'promo-actions';
+        
+        const editButton = document.createElement('button');
+        editButton.className = 'edit-button';
+        editButton.innerHTML = '<i class="fas fa-edit"></i>';
+        editButton.addEventListener('click', () => editPromoForm(promo.id));
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteButton.addEventListener('click', () => deletePromoConfirm(promo.id));
+        
+        actionsDiv.appendChild(editButton);
+        actionsDiv.appendChild(deleteButton);
+        
+        promoElement.appendChild(img);
+        promoElement.appendChild(infoDiv);
+        promoElement.appendChild(actionsDiv);
+        
         promosList.appendChild(promoElement);
     });
-}
-
-// Fonction pour éditer une promo
-async function editPromoForm(id) {
-    const promos = await getPromos();
-    const promo = promos.find(p => p.id === id);
-    if (promo) {
-        document.getElementById('promoTitle').value = promo.title;
-        document.getElementById('promoDescription').value = promo.description;
-        document.getElementById('promoImagePreview').innerHTML = 
-            `<img src="${promo.image}" alt="${promo.title}" style="max-width: 200px;">`;
-        document.getElementById('currentPromoId').value = id;
-        document.getElementById('promoForm').style.display = 'block';
-    }
-}
-
-// Fonction pour confirmer la suppression d'une promo
-async function deletePromoConfirm(id) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette promotion ?')) {
-        await deletePromo(id);
-        await loadPromosList();
-    }
 }
 
 // Gestionnaire du formulaire de promo
@@ -519,6 +517,7 @@ document.getElementById('promoForm').addEventListener('submit', async function(e
         document.getElementById('promoImagePreview').innerHTML = '';
         document.getElementById('promoForm').style.display = 'none';
         
+        // Recharger la liste des promos
         await loadPromosList();
         alert('Promotion mise à jour avec succès !');
         
@@ -561,3 +560,49 @@ if (localStorage.getItem('isAuthenticated') === 'true') {
     loadFeaturedProductForm();
     loadPromosList(); // Charger la liste des promos
 } 
+
+// Rendre les fonctions accessibles globalement
+window.editPromoForm = async function(id) {
+    const promos = await getPromos();
+    const promo = promos.find(p => p.id === id);
+    if (promo) {
+        document.getElementById('promoTitle').value = promo.title;
+        document.getElementById('promoDescription').value = promo.description;
+        document.getElementById('promoImagePreview').innerHTML = 
+            `<img src="${promo.image}" alt="${promo.title}" style="max-width: 200px;">`;
+        document.getElementById('promoId').value = id;
+        document.getElementById('promoForm').style.display = 'block';
+    }
+};
+
+window.deletePromoConfirm = async function(id) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette promotion ?')) {
+        await deletePromo(id);
+        await loadPromosList();
+    }
+};
+
+window.showRecipeForm = function(isEdit = false) {
+    const form = document.getElementById('recipeForm');
+    const title = form.querySelector('h2');
+    title.textContent = isEdit ? 'Modifier la recette' : 'Ajouter une recette';
+    form.style.display = 'block';
+    
+    if (!isEdit) {
+        document.getElementById('addRecipeForm').reset();
+        document.getElementById('imagePreview').innerHTML = '';
+        currentEditIndex = -1;
+    }
+};
+
+window.hideRecipeForm = function() {
+    document.getElementById('recipeForm').style.display = 'none';
+    document.getElementById('addRecipeForm').reset();
+    document.getElementById('imagePreview').innerHTML = '';
+    currentEditIndex = -1;
+};
+
+// Gestionnaire du bouton d'ajout de recette
+document.getElementById('addRecipeButton').addEventListener('click', () => {
+    showRecipeForm();
+}); 
