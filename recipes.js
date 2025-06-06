@@ -89,22 +89,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     const burgerMenu = document.querySelector('.burger-menu');
     const navLinks = document.querySelector('.nav-links');
 
-    burgerMenu.addEventListener('click', function() {
-        navLinks.classList.toggle('active');
-        
-        // Animation des barres du menu burger
-        const spans = this.querySelectorAll('span');
-        spans.forEach(span => span.classList.toggle('active'));
-    });
+    if (burgerMenu && navLinks) {
+        burgerMenu.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            
+            // Animation des barres du menu burger
+            const spans = this.querySelectorAll('span');
+            spans.forEach(span => span.classList.toggle('active'));
+        });
 
-    // Fermer le menu si on clique en dehors
-    document.addEventListener('click', function(event) {
-        if (!burgerMenu.contains(event.target) && !navLinks.contains(event.target)) {
-            navLinks.classList.remove('active');
-            const spans = burgerMenu.querySelectorAll('span');
-            spans.forEach(span => span.classList.remove('active'));
-        }
-    });
+        // Fermer le menu si on clique en dehors
+        document.addEventListener('click', function(event) {
+            if (!burgerMenu.contains(event.target) && !navLinks.contains(event.target)) {
+                navLinks.classList.remove('active');
+                const spans = burgerMenu.querySelectorAll('span');
+                spans.forEach(span => span.classList.remove('active'));
+            }
+        });
+    }
 
     // Initialisation des recettes si on est sur la page des recettes
     if (document.getElementById('recipesContainer')) {

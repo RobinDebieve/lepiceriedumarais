@@ -5,13 +5,43 @@ class ApiService {
         this.API_URL = `https://api.jsonbin.io/v3/b/${this.BIN_ID}`;
     }
 
+    // Fonction pour compresser une image
+    async compressImage(base64String, maxWidth = 800) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = base64String;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxWidth) {
+                    height = (maxWidth * height) / width;
+                    width = maxWidth;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convertir en JPEG avec une qualité de 0.7
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                resolve(compressedBase64);
+            };
+            img.onerror = reject;
+        });
+    }
+
     async getData() {
         try {
             console.log('Fetching data from JSONBin.io...');
             const response = await fetch(this.API_URL, {
                 method: 'GET',
                 headers: {
-                    'X-Master-Key': this.API_KEY
+                    'X-Master-Key': this.API_KEY,
+                    'Content-Type': 'application/json'
                 }
             });
 
@@ -30,6 +60,27 @@ class ApiService {
 
     async updateData(data) {
         try {
+            // Compresser les images avant l'envoi
+            if (data.promos) {
+                for (let promo of data.promos) {
+                    if (promo.image && promo.image.startsWith('data:image')) {
+                        promo.image = await this.compressImage(promo.image);
+                    }
+                }
+            }
+            
+            if (data.recipes) {
+                for (let recipe of data.recipes) {
+                    if (recipe.image && recipe.image.startsWith('data:image')) {
+                        recipe.image = await this.compressImage(recipe.image);
+                    }
+                }
+            }
+            
+            if (data.featuredProduct && data.featuredProduct.image && data.featuredProduct.image.startsWith('data:image')) {
+                data.featuredProduct.image = await this.compressImage(data.featuredProduct.image);
+            }
+
             console.log('Updating data on JSONBin.io...', data);
             const response = await fetch(this.API_URL, {
                 method: 'PUT',
