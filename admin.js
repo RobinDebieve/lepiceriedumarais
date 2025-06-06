@@ -1,3 +1,7 @@
+import { ApiService, defaultData } from './api.js';
+
+const api = new ApiService();
+
 // Configuration de sécurité
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'lemarais2024';
@@ -175,7 +179,7 @@ document.getElementById('authForm').addEventListener('submit', function(e) {
         document.getElementById('adminInterface').style.display = 'block';
         loadRecipes();
         loadFeaturedProductForm();
-        loadPromosList(); // Charger la liste des promos
+        loadPromosList();
     } else {
         alert('Identifiants incorrects');
     }
@@ -248,75 +252,67 @@ document.getElementById('addRecipeForm').addEventListener('submit', async functi
         // Valider la recette
         validateRecipe(formData);
 
-        if (currentEditIndex >= 0) {
-            // Mode édition
-            updateRecipe(currentEditIndex, formData);
+        // Ajouter ou mettre à jour la recette
+        if (currentEditIndex === -1) {
+            await addRecipe(formData);
         } else {
-            // Mode ajout
-            addRecipe(formData);
+            await updateRecipe(currentEditIndex, formData);
         }
 
-        // Recharger la liste des recettes et cacher le formulaire
-        loadRecipes();
+        // Recharger la liste des recettes
+        await loadRecipes();
         hideRecipeForm();
-        alert('Recette sauvegardée avec succès !');
     } catch (error) {
         alert('Erreur : ' + error.message);
     }
 });
 
-// Gestion des recettes
-function loadRecipes() {
-    const recipesList = document.querySelector('.recipes-list');
+// Fonction pour charger les recettes
+async function loadRecipes() {
+    const data = await api.getData();
+    const recipes = data?.recipes || [];
+    const recipesList = document.getElementById('recipesList');
     recipesList.innerHTML = '';
     
-    const recipes = getAllRecipes();
     recipes.forEach((recipe, index) => {
-        const recipeElement = document.createElement('div');
-        recipeElement.className = 'recipe-item';
-        
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'recipe-item-title';
-        titleSpan.textContent = sanitizeInput(recipe.name);
-        
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'recipe-actions';
-        
-        const editButton = document.createElement('button');
-        editButton.className = 'action-button';
-        editButton.innerHTML = '<i class="fas fa-edit"></i>';
-        editButton.onclick = () => editRecipe(index);
-        
-        const deleteButton = document.createElement('button');
-        deleteButton.className = 'action-button';
-        deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteButton.onclick = () => deleteRecipeItem(index);
-        
-        actionsDiv.appendChild(editButton);
-        actionsDiv.appendChild(deleteButton);
-        
-        recipeElement.appendChild(titleSpan);
-        recipeElement.appendChild(actionsDiv);
-        recipesList.appendChild(recipeElement);
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div class="recipe-item">
+                <img src="${recipe.image}" alt="${recipe.name}" class="recipe-thumbnail">
+                <div class="recipe-info">
+                    <h3>${recipe.name}</h3>
+                    <p>Préparation: ${recipe.prepTime}min | Cuisson: ${recipe.cookTime}min | ${recipe.servings} pers.</p>
+                </div>
+                <div class="recipe-actions">
+                    <button onclick="editRecipe(${index})" class="edit-btn">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteRecipeItem(${index})" class="delete-btn">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        recipesList.appendChild(li);
     });
 }
 
-function deleteRecipeItem(index) {
+// Fonction pour supprimer une recette
+async function deleteRecipeItem(index) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette recette ?')) {
-        deleteRecipe(index);
-        loadRecipes();
+        const data = await api.getData();
+        data.recipes.splice(index, 1);
+        await api.updateData(data);
+        await loadRecipes();
     }
 }
 
 // Fonction pour éditer une recette
-function editRecipe(index) {
-    const recipes = getAllRecipes();
-    const recipe = recipes[index];
-    
-    // Mettre à jour l'index d'édition
+async function editRecipe(index) {
+    const data = await api.getData();
+    const recipe = data.recipes[index];
     currentEditIndex = index;
     
-    // Remplir le formulaire avec les données de la recette
     document.getElementById('recipeName').value = recipe.name;
     document.getElementById('prepTime').value = recipe.prepTime;
     document.getElementById('cookTime').value = recipe.cookTime;
@@ -324,270 +320,158 @@ function editRecipe(index) {
     document.getElementById('ingredients').value = recipe.ingredients.join('\n');
     document.getElementById('instructions').value = recipe.instructions.join('\n');
     
-    // Afficher l'image actuelle
     const imagePreview = document.getElementById('imagePreview');
-    imagePreview.innerHTML = '';
-    if (recipe.image) {
-        const img = document.createElement('img');
-        img.src = recipe.image;
-        img.style.maxWidth = '200px';
-        img.style.marginTop = '10px';
-        imagePreview.appendChild(img);
-    }
+    imagePreview.innerHTML = `<img src="${recipe.image}" alt="${recipe.name}" style="max-width: 200px;">`;
     
-    // Afficher le formulaire en mode édition
     showRecipeForm(true);
 }
 
-// Fonction pour mettre à jour le produit coup de coeur
-function updateFeaturedProduct(product) {
-    localStorage.setItem('featuredProduct', JSON.stringify(product));
+// Fonction pour mettre à jour le produit coup de cœur
+async function updateFeaturedProduct(product) {
+    const data = await api.getData();
+    data.featuredProduct = product;
+    await api.updateData(data);
 }
 
-// Fonction pour obtenir le produit coup de coeur
-function getFeaturedProduct() {
-    return JSON.parse(localStorage.getItem('featuredProduct')) || defaultFeaturedProduct;
+// Fonction pour obtenir le produit coup de cœur
+async function getFeaturedProduct() {
+    const data = await api.getData();
+    return data?.featuredProduct;
 }
 
-// Fonction pour convertir une image en Base64
+// Fonction pour convertir une image en base64
 function getBase64Image(file) {
     return new Promise((resolve, reject) => {
-        if (!file) {
-            resolve('images/default-recipe.jpg');
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) { // 5MB max
-            reject(new Error('L\'image est trop grande. Taille maximum : 5MB'));
-            return;
-        }
-
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        
         reader.onload = () => resolve(reader.result);
         reader.onerror = error => reject(error);
     });
 }
 
-// Fonction pour charger le produit coup de coeur dans le formulaire
-function loadFeaturedProductForm() {
-    const product = getFeaturedProduct();
-    document.getElementById('featuredTitle').value = product.title;
-    document.getElementById('featuredDescription').value = product.description;
-    document.getElementById('featuredPrice').value = product.price;
-    
-    // Afficher l'image actuelle
-    const currentImage = document.createElement('img');
-    currentImage.src = product.image;
-    currentImage.style.maxWidth = '200px';
-    currentImage.style.marginTop = '10px';
-    const imagePreview = document.getElementById('featuredImagePreview');
-    imagePreview.innerHTML = '';
-    imagePreview.appendChild(currentImage);
+// Fonction pour charger le formulaire du produit coup de cœur
+async function loadFeaturedProductForm() {
+    const product = await getFeaturedProduct();
+    if (product) {
+        document.getElementById('featuredTitle').value = product.title;
+        document.getElementById('featuredDescription').value = product.description;
+        document.getElementById('featuredPrice').value = product.price;
+        document.getElementById('featuredImagePreview').innerHTML = 
+            `<img src="${product.image}" alt="${product.title}" style="max-width: 200px;">`;
+    }
 }
 
-// Gestionnaire du formulaire du produit coup de coeur
+// Gestion du formulaire du produit coup de cœur
 document.getElementById('featuredProductForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     try {
-        const productData = {
+        const product = {
             title: sanitizeInput(document.getElementById('featuredTitle').value),
             description: sanitizeInput(document.getElementById('featuredDescription').value),
             price: sanitizeInput(document.getElementById('featuredPrice').value),
+            image: document.getElementById('featuredImage').files[0] 
+                ? await getBase64Image(document.getElementById('featuredImage').files[0])
+                : (await getFeaturedProduct()).image
         };
-
-        // Gestion de l'image
-        const imageFile = document.getElementById('featuredImage').files[0];
-        if (imageFile) {
-            if (!imageFile.type.startsWith('image/')) {
-                throw new Error('Le fichier doit être une image');
-            }
-            productData.image = await getBase64Image(imageFile);
-        } else {
-            // Garder l'image existante
-            const currentProduct = getFeaturedProduct();
-            productData.image = currentProduct.image;
-        }
-
-        updateFeaturedProduct(productData);
-        alert('Produit coup de cœur mis à jour avec succès !');
         
+        await updateFeaturedProduct(product);
+        alert('Produit coup de cœur mis à jour avec succès !');
     } catch (error) {
         alert('Erreur : ' + error.message);
     }
 });
 
-// Prévisualisation de l'image du produit coup de coeur
-document.getElementById('featuredImage').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.createElement('img');
-            preview.src = e.target.result;
-            preview.style.maxWidth = '200px';
-            preview.style.marginTop = '10px';
-            const imagePreview = document.getElementById('featuredImagePreview');
-            imagePreview.innerHTML = '';
-            imagePreview.appendChild(preview);
-        }
-        reader.readAsDataURL(file);
-    }
-});
-
-// Fonctions pour gérer les promos
-function getPromos() {
-    return JSON.parse(localStorage.getItem('promos')) || defaultPromos;
+// Fonction pour obtenir les promos
+async function getPromos() {
+    const data = await api.getData();
+    return data?.promos || [];
 }
 
-function updatePromos(promos) {
-    localStorage.setItem('promos', JSON.stringify(promos));
+// Fonction pour mettre à jour les promos
+async function updatePromos(promos) {
+    const data = await api.getData();
+    data.promos = promos;
+    await api.updateData(data);
 }
 
-function addPromo(promo) {
-    const promos = getPromos();
-    promo.id = Date.now(); // Utiliser timestamp comme ID unique
+// Fonction pour ajouter une promo
+async function addPromo(promo) {
+    const promos = await getPromos();
     promos.push(promo);
-    updatePromos(promos);
-    loadPromosList();
+    await updatePromos(promos);
 }
 
-function deletePromo(id) {
-    const promos = getPromos().filter(promo => promo.id !== id);
-    updatePromos(promos);
-    loadPromosList();
+// Fonction pour supprimer une promo
+async function deletePromo(id) {
+    const promos = await getPromos();
+    const index = promos.findIndex(p => p.id === id);
+    if (index !== -1) {
+        promos.splice(index, 1);
+        await updatePromos(promos);
+    }
 }
 
-function editPromo(id, updatedPromo) {
-    const promos = getPromos().map(promo => 
-        promo.id === id ? { ...promo, ...updatedPromo } : promo
-    );
-    updatePromos(promos);
-    loadPromosList();
+// Fonction pour éditer une promo
+async function editPromo(id, updatedPromo) {
+    const promos = await getPromos();
+    const index = promos.findIndex(p => p.id === id);
+    if (index !== -1) {
+        promos[index] = { ...promos[index], ...updatedPromo };
+        await updatePromos(promos);
+    }
 }
 
-// Fonction pour charger la liste des promos dans l'interface admin
-function loadPromosList() {
+// Fonction pour charger la liste des promos
+async function loadPromosList() {
+    const promos = await getPromos();
     const promosList = document.getElementById('promosList');
-    const promos = getPromos();
-    
     promosList.innerHTML = '';
+    
     promos.forEach(promo => {
-        const promoElement = document.createElement('div');
-        promoElement.className = 'promo-item';
-        promoElement.innerHTML = `
-            <img src="${promo.image}" alt="${promo.title}" style="width: 100px; height: 100px; object-fit: cover;">
-            <div class="promo-info">
-                <h3>${escapeHtml(promo.title)}</h3>
-                <p>${escapeHtml(promo.description)}</p>
-            </div>
-            <div class="promo-actions">
-                <button onclick="editPromoForm(${promo.id})" class="edit-button">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="deletePromoConfirm(${promo.id})" class="delete-button">
-                    <i class="fas fa-trash"></i>
-                </button>
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div class="promo-item">
+                <img src="${promo.image}" alt="${promo.title}" class="promo-thumbnail">
+                <div class="promo-info">
+                    <h3>${promo.title}</h3>
+                    <p>${promo.description}</p>
+                </div>
+                <div class="promo-actions">
+                    <button onclick="editPromoForm(${promo.id})" class="edit-btn">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deletePromoConfirm(${promo.id})" class="delete-btn">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
         `;
-        promosList.appendChild(promoElement);
+        promosList.appendChild(li);
     });
 }
 
-// Fonction pour afficher le formulaire d'édition d'une promo
-function editPromoForm(id) {
-    const promo = getPromos().find(p => p.id === id);
-    if (!promo) return;
-
-    document.getElementById('promoTitle').value = promo.title;
-    document.getElementById('promoDescription').value = promo.description;
-    document.getElementById('promoId').value = promo.id;
-    
-    const imagePreview = document.getElementById('promoImagePreview');
-    imagePreview.innerHTML = `<img src="${promo.image}" alt="${promo.title}" style="max-width: 200px;">`;
-    
-    document.getElementById('promoForm').style.display = 'block';
+// Fonction pour éditer une promo
+async function editPromoForm(id) {
+    const promos = await getPromos();
+    const promo = promos.find(p => p.id === id);
+    if (promo) {
+        document.getElementById('promoTitle').value = promo.title;
+        document.getElementById('promoDescription').value = promo.description;
+        document.getElementById('promoImagePreview').innerHTML = 
+            `<img src="${promo.image}" alt="${promo.title}" style="max-width: 200px;">`;
+        document.getElementById('currentPromoId').value = id;
+        document.getElementById('promoForm').style.display = 'block';
+    }
 }
 
 // Fonction pour confirmer la suppression d'une promo
-function deletePromoConfirm(id) {
+async function deletePromoConfirm(id) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette promotion ?')) {
-        deletePromo(id);
+        await deletePromo(id);
+        await loadPromosList();
     }
 }
-
-// Gestionnaire du formulaire de promo
-document.getElementById('promoForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    try {
-        const promoData = {
-            title: sanitizeInput(document.getElementById('promoTitle').value),
-            description: sanitizeInput(document.getElementById('promoDescription').value)
-        };
-
-        const promoId = document.getElementById('promoId').value;
-        const imageFile = document.getElementById('promoImage').files[0];
-
-        if (imageFile) {
-            if (!imageFile.type.startsWith('image/')) {
-                throw new Error('Le fichier doit être une image');
-            }
-            promoData.image = await getBase64Image(imageFile);
-        } else if (promoId) {
-            // Garder l'image existante en cas d'édition
-            const existingPromo = getPromos().find(p => p.id === parseInt(promoId));
-            promoData.image = existingPromo.image;
-        } else {
-            throw new Error('Une image est requise pour une nouvelle promotion');
-        }
-
-        if (promoId) {
-            editPromo(parseInt(promoId), promoData);
-        } else {
-            addPromo(promoData);
-        }
-
-        // Réinitialiser le formulaire
-        this.reset();
-        document.getElementById('promoId').value = '';
-        document.getElementById('promoImagePreview').innerHTML = '';
-        document.getElementById('promoForm').style.display = 'none';
-        
-        alert('Promotion mise à jour avec succès !');
-        
-    } catch (error) {
-        alert('Erreur : ' + error.message);
-    }
-});
-
-// Prévisualisation de l'image de promo
-document.getElementById('promoImage').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.createElement('img');
-            preview.src = e.target.result;
-            preview.style.maxWidth = '200px';
-            preview.style.marginTop = '10px';
-            const imagePreview = document.getElementById('promoImagePreview');
-            imagePreview.innerHTML = '';
-            imagePreview.appendChild(preview);
-        }
-        reader.readAsDataURL(file);
-    }
-});
-
-// Bouton pour afficher le formulaire d'ajout de promo
-document.getElementById('addPromoButton').addEventListener('click', function() {
-    document.getElementById('promoForm').reset();
-    document.getElementById('promoId').value = '';
-    document.getElementById('promoImagePreview').innerHTML = '';
-    document.getElementById('promoForm').style.display = 'block';
-});
 
 // Vérifier si l'utilisateur est déjà authentifié
 if (localStorage.getItem('isAuthenticated') === 'true') {
