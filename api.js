@@ -40,7 +40,7 @@ class ApiService {
             const response = await fetch(this.API_URL, {
                 method: 'GET',
                 headers: {
-                    'X-Master-Key': this.API_KEY,
+                    'X-Access-Key': this.API_KEY,
                     'Content-Type': 'application/json'
                 }
             });
@@ -86,7 +86,7 @@ class ApiService {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': this.API_KEY
+                    'X-Access-Key': this.API_KEY
                 },
                 body: JSON.stringify(data)
             });
