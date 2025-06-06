@@ -1,3 +1,7 @@
+import { ApiService } from './api.js';
+
+const api = new ApiService();
+
 // Fonctions pour la modal des images (accessibles globalement)
 function openModal(imgSrc) {
     const modal = document.getElementById('imageModal');
@@ -11,7 +15,7 @@ function closeModal() {
     modal.style.display = "none";
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Configuration des événements de la modal
     document.getElementById('imageModal').addEventListener('click', function(e) {
         if (e.target === this) {
@@ -26,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Charger les promos depuis le localStorage
-    loadPromos();
+    // Charger les promos depuis l'API
+    await loadPromos();
 
     // Initialiser le carousel
     initializeCarousel();
@@ -55,8 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Fonction pour charger les promos
-function loadPromos() {
-    const promos = JSON.parse(localStorage.getItem('promos')) || [];
+async function loadPromos() {
+    const data = await api.getData();
+    const promos = data?.promos || [];
     const carouselContainer = document.querySelector('.carousel-container');
     
     if (!carouselContainer) return;

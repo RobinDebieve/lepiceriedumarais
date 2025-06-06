@@ -1,3 +1,7 @@
+import { ApiService, defaultData } from './api.js';
+
+const api = new ApiService();
+
 // Recettes par défaut
 const defaultRecipes = [
     {
@@ -47,37 +51,40 @@ const defaultRecipes = [
 ];
 
 // Fonction pour obtenir toutes les recettes
-function getAllRecipes() {
-    return JSON.parse(localStorage.getItem('recipes')) || defaultRecipes;
+async function getAllRecipes() {
+    const data = await api.getData();
+    return data?.recipes || defaultData.recipes;
 }
 
 // Fonction pour sauvegarder toutes les recettes
-function saveAllRecipes(recipes) {
-    localStorage.setItem('recipes', JSON.stringify(recipes));
+async function saveAllRecipes(recipes) {
+    const data = await api.getData();
+    data.recipes = recipes;
+    await api.updateData(data);
 }
 
 // Fonction pour ajouter une recette
-function addRecipe(recipe) {
-    const recipes = getAllRecipes();
+async function addRecipe(recipe) {
+    const recipes = await getAllRecipes();
     recipes.push(recipe);
-    saveAllRecipes(recipes);
+    await saveAllRecipes(recipes);
 }
 
 // Fonction pour mettre à jour une recette
-function updateRecipe(index, recipe) {
-    const recipes = getAllRecipes();
+async function updateRecipe(index, recipe) {
+    const recipes = await getAllRecipes();
     recipes[index] = recipe;
-    saveAllRecipes(recipes);
+    await saveAllRecipes(recipes);
 }
 
 // Fonction pour supprimer une recette
-function deleteRecipe(index) {
-    const recipes = getAllRecipes();
+async function deleteRecipe(index) {
+    const recipes = await getAllRecipes();
     recipes.splice(index, 1);
-    saveAllRecipes(recipes);
+    await saveAllRecipes(recipes);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Menu burger
     const burgerMenu = document.querySelector('.burger-menu');
     const navLinks = document.querySelector('.nav-links');
@@ -101,20 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialisation des recettes si on est sur la page des recettes
     if (document.getElementById('recipesContainer')) {
-        // Initialiser les recettes seulement si le localStorage est vide
-        if (!localStorage.getItem('recipes')) {
-            localStorage.setItem('recipes', JSON.stringify(defaultRecipes));
-        }
-        displayRecipes();
+        await displayRecipes();
     }
 });
 
 // Fonction pour afficher les recettes
-function displayRecipes() {
+async function displayRecipes() {
     const recipesContainer = document.getElementById('recipesContainer');
     if (!recipesContainer) return;
     
-    const recipes = getAllRecipes();
+    const recipes = await getAllRecipes();
     recipesContainer.innerHTML = '';
     
     recipes.forEach(recipe => {

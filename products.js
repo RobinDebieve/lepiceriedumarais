@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+import { ApiService } from './api.js';
+
+const api = new ApiService();
+
+document.addEventListener('DOMContentLoaded', async () => {
     // Menu burger
     const burgerMenu = document.querySelector('.burger-menu');
     const navLinks = document.querySelector('.nav-links');
@@ -17,19 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialiser le produit coup de coeur s'il n'existe pas
-    if (!localStorage.getItem('featuredProduct')) {
-        const defaultFeaturedProduct = {
-            title: "Glace Kinder Bueno",
-            description: "Découvrez notre délicieuse glace Kinder Bueno, un mélange parfait de crème glacée onctueuse et de morceaux croquants de Kinder Bueno. Un véritable délice pour les amateurs de chocolat et de noisettes !",
-            price: "3.50",
-            image: "images/bueno.jpg"
-        };
-        localStorage.setItem('featuredProduct', JSON.stringify(defaultFeaturedProduct));
-    }
-
     // Charger le produit coup de coeur
-    loadFeaturedProduct();
+    await loadFeaturedProduct();
     
     // Gestion des boutons toggle pour les catégories
     document.querySelectorAll('.toggle-btn').forEach(btn => {
@@ -61,8 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Fonction pour charger le produit coup de coeur
-function loadFeaturedProduct() {
-    const featuredProduct = JSON.parse(localStorage.getItem('featuredProduct'));
+async function loadFeaturedProduct() {
+    const data = await api.getData();
+    const featuredProduct = data?.featuredProduct;
     
     // Mettre à jour le contenu dans le HTML
     const featuredSection = document.querySelector('.featured-product');
