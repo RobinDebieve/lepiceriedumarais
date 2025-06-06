@@ -1,4 +1,5 @@
 import { ApiService, defaultData } from './api.js';
+import { addRecipe, updateRecipe, deleteRecipe } from './recipes.js';
 
 const api = new ApiService();
 
@@ -271,29 +272,36 @@ document.getElementById('addRecipeForm').addEventListener('submit', async functi
 async function loadRecipes() {
     const data = await api.getData();
     const recipes = data?.recipes || [];
-    const recipesList = document.getElementById('recipesList');
+    const recipesList = document.querySelector('.recipes-list');
     recipesList.innerHTML = '';
     
     recipes.forEach((recipe, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="recipe-item">
-                <img src="${recipe.image}" alt="${recipe.name}" class="recipe-thumbnail">
-                <div class="recipe-info">
-                    <h3>${recipe.name}</h3>
-                    <p>Préparation: ${recipe.prepTime}min | Cuisson: ${recipe.cookTime}min | ${recipe.servings} pers.</p>
-                </div>
-                <div class="recipe-actions">
-                    <button onclick="editRecipe(${index})" class="edit-btn">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="deleteRecipeItem(${index})" class="delete-btn">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-        recipesList.appendChild(li);
+        const recipeElement = document.createElement('div');
+        recipeElement.className = 'recipe-item';
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'recipe-item-title';
+        titleSpan.textContent = sanitizeInput(recipe.name);
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'recipe-actions';
+        
+        const editButton = document.createElement('button');
+        editButton.className = 'action-button';
+        editButton.innerHTML = '<i class="fas fa-edit"></i>';
+        editButton.onclick = () => editRecipe(index);
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'action-button';
+        deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteButton.onclick = () => deleteRecipeItem(index);
+        
+        actionsDiv.appendChild(editButton);
+        actionsDiv.appendChild(deleteButton);
+        
+        recipeElement.appendChild(titleSpan);
+        recipeElement.appendChild(actionsDiv);
+        recipesList.appendChild(recipeElement);
     });
 }
 
@@ -429,25 +437,24 @@ async function loadPromosList() {
     promosList.innerHTML = '';
     
     promos.forEach(promo => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="promo-item">
-                <img src="${promo.image}" alt="${promo.title}" class="promo-thumbnail">
-                <div class="promo-info">
-                    <h3>${promo.title}</h3>
-                    <p>${promo.description}</p>
-                </div>
-                <div class="promo-actions">
-                    <button onclick="editPromoForm(${promo.id})" class="edit-btn">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="deletePromoConfirm(${promo.id})" class="delete-btn">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+        const promoElement = document.createElement('div');
+        promoElement.className = 'promo-item';
+        promoElement.innerHTML = `
+            <img src="${promo.image}" alt="${promo.title}" style="width: 100px; height: 100px; object-fit: cover;">
+            <div class="promo-info">
+                <h3>${escapeHtml(promo.title)}</h3>
+                <p>${escapeHtml(promo.description)}</p>
+            </div>
+            <div class="promo-actions">
+                <button onclick="editPromoForm(${promo.id})" class="edit-button">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="deletePromoConfirm(${promo.id})" class="delete-button">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
         `;
-        promosList.appendChild(li);
+        promosList.appendChild(promoElement);
     });
 }
 
@@ -472,6 +479,79 @@ async function deletePromoConfirm(id) {
         await loadPromosList();
     }
 }
+
+// Gestionnaire du formulaire de promo
+document.getElementById('promoForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    try {
+        const promoData = {
+            title: sanitizeInput(document.getElementById('promoTitle').value),
+            description: sanitizeInput(document.getElementById('promoDescription').value)
+        };
+
+        const promoId = document.getElementById('promoId').value;
+        const imageFile = document.getElementById('promoImage').files[0];
+
+        if (imageFile) {
+            if (!imageFile.type.startsWith('image/')) {
+                throw new Error('Le fichier doit être une image');
+            }
+            promoData.image = await getBase64Image(imageFile);
+        } else if (promoId) {
+            // Garder l'image existante en cas d'édition
+            const existingPromo = (await getPromos()).find(p => p.id === parseInt(promoId));
+            promoData.image = existingPromo.image;
+        } else {
+            throw new Error('Une image est requise pour une nouvelle promotion');
+        }
+
+        if (promoId) {
+            await editPromo(parseInt(promoId), promoData);
+        } else {
+            promoData.id = Date.now(); // Utiliser timestamp comme ID unique
+            await addPromo(promoData);
+        }
+
+        // Réinitialiser le formulaire
+        this.reset();
+        document.getElementById('promoId').value = '';
+        document.getElementById('promoImagePreview').innerHTML = '';
+        document.getElementById('promoForm').style.display = 'none';
+        
+        await loadPromosList();
+        alert('Promotion mise à jour avec succès !');
+        
+    } catch (error) {
+        alert('Erreur : ' + error.message);
+    }
+});
+
+// Prévisualisation de l'image de promo
+document.getElementById('promoImage').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.createElement('img');
+            preview.src = e.target.result;
+            preview.style.maxWidth = '200px';
+            preview.style.marginTop = '10px';
+            const imagePreview = document.getElementById('promoImagePreview');
+            imagePreview.innerHTML = '';
+            imagePreview.appendChild(preview);
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+// Bouton pour afficher le formulaire d'ajout de promo
+document.getElementById('addPromoButton').addEventListener('click', function() {
+    document.getElementById('promoForm').reset();
+    document.getElementById('promoId').value = '';
+    document.getElementById('promoImagePreview').innerHTML = '';
+    document.getElementById('promoForm').style.display = 'block';
+});
 
 // Vérifier si l'utilisateur est déjà authentifié
 if (localStorage.getItem('isAuthenticated') === 'true') {

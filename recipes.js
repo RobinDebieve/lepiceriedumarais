@@ -166,4 +166,13 @@ async function displayRecipes() {
         
         recipesContainer.appendChild(recipeCard);
     });
-} 
+}
+
+// Exporter les fonctions pour l'interface d'administration
+export {
+    getAllRecipes,
+    saveAllRecipes,
+    addRecipe,
+    updateRecipe,
+    deleteRecipe
+}; 
