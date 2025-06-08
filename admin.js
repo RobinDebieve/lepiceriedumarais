@@ -4,14 +4,18 @@ import { addRecipe, updateRecipe, deleteRecipe } from './recipes.js';
 const api = new ApiService();
 
 // Configuration de sécurité
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'lemarais2024';
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes en millisecondes
 
 let currentEditIndex = -1;
 let loginAttempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
 let lastAttemptTime = parseInt(localStorage.getItem('lastAttemptTime')) || 0;
+
+// Vérifier que Firebase est initialisé
+if (!firebase.apps.length) {
+    console.error('Firebase n\'est pas initialisé');
+    throw new Error('Firebase n\'est pas initialisé');
+}
 
 // Promos par défaut
 const defaultPromos = [
