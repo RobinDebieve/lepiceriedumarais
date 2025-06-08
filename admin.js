@@ -5,8 +5,7 @@ const api = new ApiService();
 
 // Configuration de sécurité
 const ADMIN_USERNAME = 'admin';
-// Le mot de passe haché avec bcrypt 
-const ADMIN_PASSWORD_HASH = '$2b$10$YourHashedPasswordHere';
+const ADMIN_PASSWORD = 'lemarais2024';
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes en millisecondes
 
@@ -184,7 +183,10 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    if (username === ADMIN_USERNAME && await verifyPassword(password, ADMIN_PASSWORD_HASH)) {
+    console.log('Tentative de connexion avec:', { username, password: '***' });
+    
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        console.log('Connexion réussie');
         // Authentification réussie
         setSession();
         document.getElementById('loginForm').style.display = 'none';
@@ -193,6 +195,7 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
         loadFeaturedProductForm();
         loadPromosList();
     } else {
+        console.log('Échec de la connexion');
         alert('Identifiants incorrects');
     }
 });
