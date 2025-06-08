@@ -180,13 +180,14 @@ async function verifyPassword(inputPassword, hashedPassword) {
 document.getElementById('authForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const username = document.getElementById('username').value;
+    const email = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    console.log('Tentative de connexion avec:', { username, password: '***' });
-    
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    try {
+        // Connexion avec Firebase
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         console.log('Connexion réussie');
+        
         // Authentification réussie
         setSession();
         document.getElementById('loginForm').style.display = 'none';
@@ -194,11 +195,39 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
         loadRecipes();
         loadFeaturedProductForm();
         loadPromosList();
-    } else {
-        console.log('Échec de la connexion');
+    } catch (error) {
+        console.error('Erreur de connexion:', error);
         alert('Identifiants incorrects');
     }
 });
+
+// Vérifier l'état de l'authentification
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        // L'utilisateur est connecté
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('adminInterface').style.display = 'block';
+        loadRecipes();
+        loadFeaturedProductForm();
+        loadPromosList();
+    } else {
+        // L'utilisateur est déconnecté
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('adminInterface').style.display = 'none';
+    }
+});
+
+// Fonction de déconnexion
+window.logout = function() {
+    firebase.auth().signOut().then(() => {
+        console.log('Déconnexion réussie');
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('adminInterface').style.display = 'none';
+        location.reload();
+    }).catch((error) => {
+        console.error('Erreur de déconnexion:', error);
+    });
+};
 
 // Ajouter le bouton de déconnexion
 const adminInterface = document.getElementById('adminInterface');
