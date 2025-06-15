@@ -12,7 +12,7 @@ class ApiService {
     }
 
     // Fonction pour compresser une image
-    async compressImage(base64String, maxWidth = 800) {
+    async compressImage(base64String, maxWidth = 600, quality = 0.6) {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.src = base64String;
@@ -21,6 +21,7 @@ class ApiService {
                 let width = img.width;
                 let height = img.height;
                 
+                // Calculer les nouvelles dimensions en gardant le ratio
                 if (width > maxWidth) {
                     height = (maxWidth * height) / width;
                     width = maxWidth;
@@ -32,8 +33,22 @@ class ApiService {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Convertir en JPEG avec une qualité de 0.7
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                // Convertir en JPEG avec une qualité réduite
+                const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                
+                // Vérifier la taille de l'image compressée
+                const base64Length = compressedBase64.length - 'data:image/jpeg;base64,'.length;
+                const sizeInBytes = Math.ceil((base64Length * 3) / 4);
+                const sizeInKB = sizeInBytes / 1024;
+                
+                console.log(`Image compressée : ${sizeInKB.toFixed(2)} KB`);
+                
+                // Si l'image est toujours trop grande, réduire encore la qualité
+                if (sizeInKB > 100) {
+                    console.log('Image encore trop grande, nouvelle compression avec qualité réduite');
+                    return this.compressImage(base64String, maxWidth, quality - 0.1);
+                }
+                
                 resolve(compressedBase64);
             };
             img.onerror = reject;
