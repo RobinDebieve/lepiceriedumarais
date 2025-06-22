@@ -52,8 +52,7 @@ const defaultRecipes = [
 
 // Fonction pour obtenir toutes les recettes
 async function getAllRecipes() {
-    const data = await api.getData();
-    return data?.recipes || defaultData.recipes;
+    return await api.getAllRecipes();
 }
 
 // Fonction pour sauvegarder toutes les recettes
@@ -128,7 +127,7 @@ async function displayRecipes() {
         
         recipeCard.innerHTML = `
             <div class="recipe-image">
-                <img src="${recipe.image}" alt="${recipe.name}">
+                <img src="${recipe.imageUrl || 'images/recette1.jpg'}" alt="${recipe.name}">
             </div>
             <div class="recipe-content">
                 <h2>${recipe.name}</h2>

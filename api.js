@@ -224,6 +224,71 @@ class ApiService {
         if (imageUrl) updateData.imageUrl = imageUrl;
         await this.firestore.collection('featuredProduct').doc('current').set(updateData, { merge: true });
     }
+
+    // Upload d'une image de recette dans Firebase Storage
+    async uploadRecipeImage(file) {
+        const storageRef = this.storage.ref();
+        const recipeRef = storageRef.child('recipes/' + Date.now() + '_' + file.name);
+        await recipeRef.put(file);
+        return await recipeRef.getDownloadURL();
+    }
+
+    // Récupérer toutes les recettes
+    async getAllRecipes() {
+        const snapshot = await this.firestore.collection('recipes').get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+
+    // Ajouter une recette
+    async addRecipe({ name, prepTime, cookTime, servings, ingredients, instructions, imageFile }) {
+        let imageUrl = '';
+        if (imageFile) {
+            imageUrl = await this.uploadRecipeImage(imageFile);
+        }
+        const docRef = await this.firestore.collection('recipes').add({
+            name,
+            prepTime,
+            cookTime,
+            servings,
+            ingredients,
+            instructions,
+            imageUrl
+        });
+        return docRef.id;
+    }
+
+    // Modifier une recette
+    async updateRecipe(id, { name, prepTime, cookTime, servings, ingredients, instructions, imageFile }) {
+        const docRef = this.firestore.collection('recipes').doc(id);
+        let imageUrl = undefined;
+        if (imageFile) {
+            // Supprimer l'ancienne image
+            const doc = await docRef.get();
+            if (doc.exists && doc.data().imageUrl) {
+                try {
+                    const imageRef = this.storage.refFromURL(doc.data().imageUrl);
+                    await imageRef.delete();
+                } catch (e) {}
+            }
+            imageUrl = await this.uploadRecipeImage(imageFile);
+        }
+        const updateData = { name, prepTime, cookTime, servings, ingredients, instructions };
+        if (imageUrl) updateData.imageUrl = imageUrl;
+        await docRef.update(updateData);
+    }
+
+    // Supprimer une recette
+    async deleteRecipe(id) {
+        const docRef = this.firestore.collection('recipes').doc(id);
+        const doc = await docRef.get();
+        if (doc.exists && doc.data().imageUrl) {
+            try {
+                const imageRef = this.storage.refFromURL(doc.data().imageUrl);
+                await imageRef.delete();
+            } catch (e) {}
+        }
+        await docRef.delete();
+    }
 }
 
 // Structure des données
