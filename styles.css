@@ -69,7 +69,7 @@ h3, .carousel-slide h3 {
 .nav-links a {
     font-family: var(--font-subtitle);
     font-weight: bold;
-    color: var(--white);
+    color: #eaf2d9;
     text-decoration: none;
     transition: all 0.5s ease-in-out;
     font-size: 1.8rem;
@@ -79,16 +79,16 @@ h3, .carousel-slide h3 {
 }
 
 .nav-links a:hover {
-    background-color: var(--hover-color);
-    color: var(--primary-color);
+    background-color: #eaf2d9;
+    color: #f49624;
     opacity: 1;
     border-radius: 20px;
     transform: scale(1.1);
 }
 
 .nav-links a:active {
-    background-color: var(--active-color);
-    color: var(--white);
+    background-color: #f49624;
+    color: #eaf2d9;
     transform: scale(0.95);
     box-shadow: inset 0 0 10px rgba(33, 43, 26, 0.2);
     border-radius: 20px;
