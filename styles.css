@@ -1811,4 +1811,26 @@ footer {
     background-color: #f49624;
     color: #eaf2d9;
     border: 2px solid #f49624;
+}
+
+/* Styles de couleur pour les flèches des pages produits et recettes */
+.category-card .toggle-btn,
+.recipe-content .toggle-btn {
+    background-color: transparent;
+    border: 2px solid #eaf2d9;
+    color: #eaf2d9;
+}
+
+.category-card .toggle-btn:hover,
+.recipe-content .toggle-btn:hover {
+    background-color: #eaf2d9;
+    border-color: #f49624;
+    color: #f49624;
+}
+
+.category-card .toggle-btn:active,
+.recipe-content .toggle-btn:active {
+    background-color: #f49624;
+    border-color: #f49624;
+    color: #eaf2d9;
 } 
