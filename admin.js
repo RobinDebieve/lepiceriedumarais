@@ -304,34 +304,27 @@ document.getElementById('addRecipeForm').addEventListener('submit', async functi
 
 // Fonction pour charger les recettes
 async function loadRecipes() {
-    let recipes = await api.getAllRecipes();
+    const recipes = await api.getAllRecipes();
     const recipesList = document.querySelector('.recipes-list');
     recipesList.innerHTML = '';
-    
-    recipes.forEach((recipe, index) => {
+    recipes.forEach((recipe) => {
         const recipeElement = document.createElement('div');
         recipeElement.className = 'recipe-item';
-        
         const titleSpan = document.createElement('span');
         titleSpan.className = 'recipe-item-title';
         titleSpan.textContent = sanitizeInput(recipe.name);
-        
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'recipe-actions';
-        
         const editButton = document.createElement('button');
         editButton.className = 'action-button';
         editButton.innerHTML = '<i class="fas fa-edit"></i>';
-        editButton.addEventListener('click', () => editRecipe(index));
-        
+        editButton.addEventListener('click', () => editRecipe(recipe));
         const deleteButton = document.createElement('button');
         deleteButton.className = 'action-button';
         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteButton.addEventListener('click', () => deleteRecipeItem(index));
-        
+        deleteButton.addEventListener('click', () => deleteRecipeItem(recipe.id));
         actionsDiv.appendChild(editButton);
         actionsDiv.appendChild(deleteButton);
-        
         recipeElement.appendChild(titleSpan);
         recipeElement.appendChild(actionsDiv);
         recipesList.appendChild(recipeElement);
@@ -339,28 +332,24 @@ async function loadRecipes() {
 }
 
 // Fonction pour supprimer une recette
-async function deleteRecipeItem(index) {
+async function deleteRecipeItem(id) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette recette ?')) {
-        await api.deleteRecipe(index);
+        await api.deleteRecipe(id);
         await loadRecipes();
     }
 }
 
 // Fonction pour éditer une recette
-async function editRecipe(index) {
-    const recipe = await api.getRecipe(index);
-    currentEditIndex = index;
-    
+async function editRecipe(recipe) {
+    currentEditIndex = recipe.id;
     document.getElementById('recipeName').value = recipe.name;
     document.getElementById('prepTime').value = recipe.prepTime;
     document.getElementById('cookTime').value = recipe.cookTime;
     document.getElementById('servings').value = recipe.servings;
     document.getElementById('ingredients').value = recipe.ingredients.join('\n');
     document.getElementById('instructions').value = recipe.instructions.join('\n');
-    
     const imagePreview = document.getElementById('imagePreview');
-    imagePreview.innerHTML = `<img src="${recipe.image}" alt="${recipe.name}" style="max-width: 200px;">`;
-    
+    imagePreview.innerHTML = `<img src="${recipe.imageUrl || ''}" alt="${recipe.name}" style="max-width: 200px;">`;
     showRecipeForm(true);
 }
 
