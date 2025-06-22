@@ -158,7 +158,7 @@ p, .info-text p, .carousel-slide p {
 }
 
 .logo a:active {
-    /* Ne rien changer ici pour le logo */
+    content: url('images/logo4.png');
 }
 
 .burger-menu {
