@@ -44,19 +44,6 @@ if (!localStorage.getItem('promos')) {
     localStorage.setItem('promos', JSON.stringify(defaultPromos));
 }
 
-// Produit coup de coeur par défaut
-const defaultFeaturedProduct = {
-    title: "Glace Kinder Bueno",
-    description: "Découvrez notre délicieuse glace Kinder Bueno, un mélange parfait de crème glacée onctueuse et de morceaux croquants de Kinder Bueno. Un véritable délice pour les amateurs de chocolat et de noisettes !",
-    price: "3.50",
-    image: "images/bueno.jpg"
-};
-
-// Initialiser le produit coup de coeur s'il n'existe pas
-if (!localStorage.getItem('featuredProduct')) {
-    localStorage.setItem('featuredProduct', JSON.stringify(defaultFeaturedProduct));
-}
-
 // Fonction pour échapper les caractères HTML
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -381,61 +368,51 @@ async function editRecipe(index) {
     showRecipeForm(true);
 }
 
-// Fonction pour mettre à jour le produit coup de cœur
-async function updateFeaturedProduct(product) {
-    const data = await api.getData();
-    data.featuredProduct = product;
-    await api.updateData(data);
-}
-
-// Fonction pour obtenir le produit coup de cœur
-async function getFeaturedProduct() {
-    const data = await api.getData();
-    return data?.featuredProduct;
-}
-
-// Fonction pour convertir une image en base64
-function getBase64Image(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
-}
-
-// Fonction pour charger le formulaire du produit coup de cœur
+// Fonction pour charger le formulaire du produit coup de cœur depuis Firestore
 async function loadFeaturedProductForm() {
-    const product = await getFeaturedProduct();
-    if (product) {
-        document.getElementById('featuredTitle').value = product.title;
-        document.getElementById('featuredDescription').value = product.description;
-        document.getElementById('featuredPrice').value = product.price;
-        document.getElementById('featuredImagePreview').innerHTML = 
-            `<img src="${product.image}" alt="${product.title}" style="max-width: 200px;">`;
+    let product = await api.getFeaturedProduct();
+    // Si la base est vide, importer l'ancien produit par défaut
+    if (!product) {
+        product = {
+            title: "Glace Kinder Bueno",
+            description: "Découvrez notre délicieuse glace Kinder Bueno, un mélange parfait de crème glacée onctueuse et de morceaux croquants de Kinder Bueno. Un véritable délice pour les amateurs de chocolat et de noisettes !",
+            price: "3.50",
+            imageUrl: "images/bueno.jpg"
+        };
+        // Importer dans Firestore (sans image, à la main)
+        await api.updateFeaturedProduct({
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            imageFile: null // image par défaut, à remplacer manuellement ensuite
+        });
+        product = await api.getFeaturedProduct();
     }
+    document.getElementById('featuredTitle').value = product.title || '';
+    document.getElementById('featuredDescription').value = product.description || '';
+    document.getElementById('featuredPrice').value = product.price || '';
+    document.getElementById('featuredImagePreview').innerHTML =
+        product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.title}" style="max-width: 200px;">` : '';
 }
 
 // Gestion du formulaire du produit coup de cœur
-document.getElementById('featuredProductForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    try {
-        const product = {
-            title: sanitizeInput(document.getElementById('featuredTitle').value),
-            description: sanitizeInput(document.getElementById('featuredDescription').value),
-            price: sanitizeInput(document.getElementById('featuredPrice').value),
-            image: document.getElementById('featuredImage').files[0] 
-                ? await getBase64Image(document.getElementById('featuredImage').files[0])
-                : (await getFeaturedProduct()).image
-        };
-        
-        await updateFeaturedProduct(product);
-        alert('Produit coup de cœur mis à jour avec succès !');
-    } catch (error) {
-        alert('Erreur : ' + error.message);
-    }
-});
+const featuredProductForm = document.getElementById('featuredProductForm');
+if (featuredProductForm) {
+    featuredProductForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            const title = sanitizeInput(document.getElementById('featuredTitle').value);
+            const description = sanitizeInput(document.getElementById('featuredDescription').value);
+            const price = sanitizeInput(document.getElementById('featuredPrice').value);
+            const imageFile = document.getElementById('featuredImage').files[0];
+            await api.updateFeaturedProduct({ title, description, price, imageFile });
+            alert('Produit coup de cœur mis à jour avec succès !');
+            await loadFeaturedProductForm();
+        } catch (error) {
+            alert('Erreur : ' + error.message);
+        }
+    });
+}
 
 // Nouvelle fonction pour charger les promos depuis Firestore
 async function loadPromosList() {
@@ -606,4 +583,14 @@ window.hideRecipeForm = function() {
 // Gestionnaire du bouton d'ajout de recette
 document.getElementById('addRecipeButton').addEventListener('click', () => {
     showRecipeForm();
-}); 
+});
+
+// Fonction pour convertir une image en base64
+function getBase64Image(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+} 

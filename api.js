@@ -195,6 +195,35 @@ class ApiService {
         if (imageUrl) updateData.imageUrl = imageUrl;
         await docRef.update(updateData);
     }
+
+    // Upload d'une image de produit coup de coeur dans Firebase Storage
+    async uploadFeaturedImage(file) {
+        const storageRef = this.storage.ref();
+        const featuredRef = storageRef.child('featuredProduct/' + Date.now() + '_' + file.name);
+        await featuredRef.put(file);
+        return await featuredRef.getDownloadURL();
+    }
+
+    // Récupérer le produit coup de coeur (document unique 'current')
+    async getFeaturedProduct() {
+        const doc = await this.firestore.collection('featuredProduct').doc('current').get();
+        if (doc.exists) {
+            return doc.data();
+        } else {
+            return null;
+        }
+    }
+
+    // Mettre à jour le produit coup de coeur
+    async updateFeaturedProduct({ title, description, price, imageFile }) {
+        let imageUrl = undefined;
+        if (imageFile) {
+            imageUrl = await this.uploadFeaturedImage(imageFile);
+        }
+        const updateData = { title, description, price };
+        if (imageUrl) updateData.imageUrl = imageUrl;
+        await this.firestore.collection('featuredProduct').doc('current').set(updateData, { merge: true });
+    }
 }
 
 // Structure des données

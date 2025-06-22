@@ -55,9 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Fonction pour charger le produit coup de coeur
 async function loadFeaturedProduct() {
-    const data = await api.getData();
-    const featuredProduct = data?.featuredProduct;
-    
+    const featuredProduct = await api.getFeaturedProduct();
     // Mettre à jour le contenu dans le HTML
     const featuredSection = document.querySelector('.featured-product');
     if (featuredSection && featuredProduct) {
@@ -70,7 +68,7 @@ async function loadFeaturedProduct() {
         if (description) description.textContent = featuredProduct.description;
         if (price) price.textContent = featuredProduct.price + ' €';
         if (image) {
-            image.src = featuredProduct.image;
+            image.src = featuredProduct.imageUrl || 'images/bueno.jpg';
             image.alt = featuredProduct.title;
         }
     }
