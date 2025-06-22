@@ -341,17 +341,14 @@ async function loadRecipes() {
 // Fonction pour supprimer une recette
 async function deleteRecipeItem(index) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette recette ?')) {
-        const data = await api.getData();
-        data.recipes.splice(index, 1);
-        await api.updateData(data);
+        await api.deleteRecipe(index);
         await loadRecipes();
     }
 }
 
 // Fonction pour éditer une recette
 async function editRecipe(index) {
-    const data = await api.getData();
-    const recipe = data.recipes[index];
+    const recipe = await api.getRecipe(index);
     currentEditIndex = index;
     
     document.getElementById('recipeName').value = recipe.name;
