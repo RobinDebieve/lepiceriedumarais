@@ -1224,39 +1224,23 @@ footer {
     }
 }
 
-/* Garder les styles spécifiques pour la page recettes après ce commentaire */
+/* Styles spécifiques pour les flèches de la page recettes */
 .recipe-content .toggle-btn {
-    position: absolute;
-    left: 50%;
-    bottom: 2rem;
-    transform: translateX(-50%);
-    background: transparent;
-    border: 2px solid var(--main-background);
-    color: var(--main-background);
-    width: 50px;
-    height: 50px;
-    border-radius: 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 2;
+    background-color: transparent;
+    color: #eaf2d9;
+    border: 2px solid #eaf2d9;
 }
 
 .recipe-content .toggle-btn:hover {
-    background-color: var(--main-background);
-    color: var(--primary-color);
-    transform: translateX(-50%) scale(1.1);
+    background-color: #eaf2d9;
+    color: #f49624;
+    border: 2px solid #f49624;
 }
 
-.recipe-content .toggle-btn i {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
-}
-
-.recipe-content .toggle-btn[aria-expanded="true"] i {
-    transform: rotate(180deg);
+.recipe-content .toggle-btn:active {
+    background-color: #f49624;
+    color: #eaf2d9;
+    border: 2px solid #f49624;
 }
 
 /* Admin Page Styles */
