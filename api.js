@@ -51,7 +51,6 @@ class ApiService {
 
     async getData() {
         try {
-            console.log('Fetching data from JSONBin.io...');
             const response = await fetch(this.API_URL, {
                 method: 'GET',
                 headers: {
@@ -65,10 +64,8 @@ class ApiService {
             }
 
             const data = await response.json();
-            console.log('Data received:', data);
             return data.record;
         } catch (error) {
-            console.error('Error fetching data:', error);
             return defaultData;
         }
     }
@@ -96,7 +93,6 @@ class ApiService {
                 data.featuredProduct.image = await this.compressImage(data.featuredProduct.image);
             }
 
-            console.log('Updating data on JSONBin.io...', data);
             const response = await fetch(this.API_URL, {
                 method: 'PUT',
                 headers: {
@@ -111,10 +107,8 @@ class ApiService {
             }
 
             const result = await response.json();
-            console.log('Data updated successfully:', result);
             return result;
         } catch (error) {
-            console.error('Error updating data:', error);
             throw error;
         }
     }

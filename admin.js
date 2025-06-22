@@ -44,54 +44,6 @@ if (!localStorage.getItem('promos')) {
     localStorage.setItem('promos', JSON.stringify(defaultPromos));
 }
 
-// Nouvelle gestion des recettes avec Firestore/Storage
-const defaultRecipes = [
-    {
-        name: "Tarte aux pommes rustique",
-        prepTime: "30",
-        cookTime: "45",
-        servings: "6",
-        ingredients: [
-            "6 pommes Golden",
-            "1 pâte brisée",
-            "50g de sucre",
-            "1 sachet de sucre vanillé",
-            "30g de beurre",
-            "Cannelle (facultatif)"
-        ],
-        instructions: [
-            "Préchauffez le four à 180°C",
-            "Épluchez et coupez les pommes en fines tranches",
-            "Étalez la pâte et disposez les pommes en rosace",
-            "Saupoudrez de sucre et parsemez de beurre",
-            "Enfournez pour 45 minutes"
-        ],
-        imageUrl: "images/recette1.jpg"
-    },
-    {
-        name: "Soupe de légumes de saison",
-        prepTime: "20",
-        cookTime: "35",
-        servings: "4",
-        ingredients: [
-            "3 carottes",
-            "2 pommes de terre",
-            "2 poireaux",
-            "1 oignon",
-            "2 branches de céleri",
-            "Sel et poivre"
-        ],
-        instructions: [
-            "Épluchez et coupez tous les légumes",
-            "Faites revenir l'oignon dans une cocotte",
-            "Ajoutez les légumes et couvrez d'eau",
-            "Laissez mijoter 35 minutes",
-            "Mixez et assaisonnez"
-        ],
-        imageUrl: "images/recette2.jpg"
-    }
-];
-
 // Fonction pour échapper les caractères HTML
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -353,21 +305,6 @@ document.getElementById('addRecipeForm').addEventListener('submit', async functi
 // Fonction pour charger les recettes
 async function loadRecipes() {
     let recipes = await api.getAllRecipes();
-    // Si la base est vide, importer les deux recettes par défaut
-    if (!recipes || recipes.length === 0) {
-        for (const recipe of defaultRecipes) {
-            await api.addRecipe({
-                name: recipe.name,
-                prepTime: recipe.prepTime,
-                cookTime: recipe.cookTime,
-                servings: recipe.servings,
-                ingredients: recipe.ingredients,
-                instructions: recipe.instructions,
-                imageFile: null // image par défaut, à remplacer manuellement ensuite
-            });
-        }
-        recipes = await api.getAllRecipes();
-    }
     const recipesList = document.querySelector('.recipes-list');
     recipesList.innerHTML = '';
     
