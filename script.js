@@ -83,11 +83,15 @@ async function loadPromos() {
         carouselContainer.appendChild(slide);
     });
     
-    // Ajouter le clone du premier slide pour le défilement infini
+    // Ajouter les clones pour le défilement infini
     if (promos.length > 0) {
-        const clone = carouselContainer.firstElementChild.cloneNode(true);
-        clone.classList.add('clone');
-        carouselContainer.appendChild(clone);
+        const firstClone = carouselContainer.firstElementChild.cloneNode(true);
+        firstClone.classList.add('clone');
+        carouselContainer.appendChild(firstClone);
+
+        const lastClone = carouselContainer.lastElementChild.previousElementSibling.cloneNode(true);
+        lastClone.classList.add('clone');
+        carouselContainer.insertBefore(lastClone, carouselContainer.firstElementChild);
     }
     // Réinitialiser le carrousel après ajout des slides
     initializeCarousel();
@@ -98,20 +102,15 @@ function initializeCarousel() {
     const carousel = document.querySelector('.carousel-container');
     if (!carousel) return;
 
-    const slides = document.querySelectorAll('.carousel-slide');
+    let slides = Array.from(carousel.children);
     const prevBtn = document.querySelector('.carousel-btn.prev');
     const nextBtn = document.querySelector('.carousel-btn.next');
     
-    let currentSlide = 0;
-    const totalSlides = slides.length;
+    let currentSlide = 1; // On commence sur le premier VRAI slide
     let isTransitioning = false;
 
     function updateCarousel(transition = true) {
-        if (transition) {
-            carousel.style.transition = 'transform 0.5s ease-in-out';
-        } else {
-            carousel.style.transition = 'none';
-        }
+        carousel.style.transition = transition ? 'transform 0.5s ease-in-out' : 'none';
         carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
     }
 
@@ -140,14 +139,16 @@ function initializeCarousel() {
     // Handle infinite scroll
     carousel.addEventListener('transitionend', () => {
         isTransitioning = false;
-        // Si on arrive au clone, on revient instantanément au premier slide
-        if (currentSlide >= totalSlides - 1) {
-            currentSlide = 0;
+        slides = Array.from(carousel.children); // Mettre à jour la liste des slides
+        
+        // Si on est sur le clone de fin, on revient au premier vrai slide
+        if (currentSlide >= slides.length - 1) {
+            currentSlide = 1;
             updateCarousel(false);
         }
-        // Si on recule avant le premier slide, on va instantanément au dernier vrai slide
-        if (currentSlide < 0) {
-            currentSlide = totalSlides - 2;
+        // Si on est sur le clone de début, on va au dernier vrai slide
+        if (currentSlide <= 0) {
+            currentSlide = slides.length - 2;
             updateCarousel(false);
         }
     });
