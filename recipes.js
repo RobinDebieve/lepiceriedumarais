@@ -7,34 +7,6 @@ async function getAllRecipes() {
     return await api.getAllRecipes();
 }
 
-// Fonction pour sauvegarder toutes les recettes
-async function saveAllRecipes(recipes) {
-    const data = await api.getData();
-    data.recipes = recipes;
-    await api.updateData(data);
-}
-
-// Fonction pour ajouter une recette
-async function addRecipe(recipe) {
-    const recipes = await getAllRecipes();
-    recipes.push(recipe);
-    await saveAllRecipes(recipes);
-}
-
-// Fonction pour mettre à jour une recette
-async function updateRecipe(index, recipe) {
-    const recipes = await getAllRecipes();
-    recipes[index] = recipe;
-    await saveAllRecipes(recipes);
-}
-
-// Fonction pour supprimer une recette
-async function deleteRecipe(index) {
-    const recipes = await getAllRecipes();
-    recipes.splice(index, 1);
-    await saveAllRecipes(recipes);
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
     // Menu burger
     const burgerMenu = document.querySelector('.burger-menu');
@@ -124,8 +96,5 @@ async function displayRecipes() {
 // Exporter les fonctions pour l'interface d'administration
 export {
     getAllRecipes,
-    saveAllRecipes,
-    addRecipe,
-    updateRecipe,
-    deleteRecipe
+    displayRecipes
 }; 
