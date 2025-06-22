@@ -333,9 +333,11 @@ async function loadRecipes() {
 
 // Fonction pour supprimer une recette
 async function deleteRecipeItem(id) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette recette ?')) {
+    if (id) {
         await api.deleteRecipe(id);
         await loadRecipes();
+    } else {
+        alert("Erreur : id de la recette introuvable !");
     }
 }
 
