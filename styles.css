@@ -158,7 +158,11 @@ p, .info-text p, .carousel-slide p {
 }
 
 .logo a:active {
-    content: url('images/logo4.png');
+    background-color: #f49624;
+}
+
+.logo a:active img {
+    content: url('images/logo.png');
 }
 
 .burger-menu {
