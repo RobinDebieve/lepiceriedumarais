@@ -60,8 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Fonction pour charger les promos
 async function loadPromos() {
-    const data = await api.getData();
-    const promos = data?.promos || [];
+    const promos = await api.getAllPromos();
     const carouselContainer = document.querySelector('.carousel-container');
     
     if (!carouselContainer) return;
@@ -74,7 +73,7 @@ async function loadPromos() {
         const slide = document.createElement('div');
         slide.className = 'carousel-slide';
         slide.innerHTML = `
-            <img src="${promo.image}" alt="${promo.title}">
+            <img src="${promo.imageUrl}" alt="${promo.title}">
             <h3>${promo.title}</h3>
             <p>${promo.description}</p>
         `;

@@ -437,49 +437,9 @@ document.getElementById('featuredProductForm').addEventListener('submit', async 
     }
 });
 
-// Fonction pour obtenir les promos
-async function getPromos() {
-    const data = await api.getData();
-    return data?.promos || [];
-}
-
-// Fonction pour mettre à jour les promos
-async function updatePromos(promos) {
-    const data = await api.getData();
-    data.promos = promos;
-    await api.updateData(data);
-}
-
-// Fonction pour ajouter une promo
-async function addPromo(promo) {
-    const promos = await getPromos();
-    promos.push(promo);
-    await updatePromos(promos);
-}
-
-// Fonction pour supprimer une promo
-async function deletePromo(id) {
-    const promos = await getPromos();
-    const index = promos.findIndex(p => p.id === id);
-    if (index !== -1) {
-        promos.splice(index, 1);
-        await updatePromos(promos);
-    }
-}
-
-// Fonction pour éditer une promo
-async function editPromo(id, updatedPromo) {
-    const promos = await getPromos();
-    const index = promos.findIndex(p => p.id === id);
-    if (index !== -1) {
-        promos[index] = { ...promos[index], ...updatedPromo };
-        await updatePromos(promos);
-    }
-}
-
-// Fonction pour charger la liste des promos
+// Nouvelle fonction pour charger les promos depuis Firestore
 async function loadPromosList() {
-    const promos = await getPromos();
+    const promos = await api.getAllPromos();
     const promosList = document.getElementById('promosList');
     promosList.innerHTML = '';
     
@@ -488,7 +448,7 @@ async function loadPromosList() {
         promoElement.className = 'promo-item';
         
         const img = document.createElement('img');
-        img.src = promo.image;
+        img.src = promo.imageUrl;
         img.alt = promo.title;
         img.style.width = '100px';
         img.style.height = '100px';
@@ -501,18 +461,24 @@ async function loadPromosList() {
             <p>${escapeHtml(promo.description)}</p>
         `;
         
+        // Actions (édition/suppression)
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'promo-actions';
         
         const editButton = document.createElement('button');
         editButton.className = 'edit-button';
         editButton.innerHTML = '<i class="fas fa-edit"></i>';
-        editButton.addEventListener('click', () => editPromoForm(promo.id));
+        editButton.addEventListener('click', () => editPromoForm(promo));
         
         const deleteButton = document.createElement('button');
         deleteButton.className = 'delete-button';
         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteButton.addEventListener('click', () => deletePromoConfirm(promo.id));
+        deleteButton.addEventListener('click', async () => {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette promotion ?')) {
+                await api.deletePromo(promo.id);
+                await loadPromosList();
+            }
+        });
         
         actionsDiv.appendChild(editButton);
         actionsDiv.appendChild(deleteButton);
@@ -520,54 +486,42 @@ async function loadPromosList() {
         promoElement.appendChild(img);
         promoElement.appendChild(infoDiv);
         promoElement.appendChild(actionsDiv);
-        
         promosList.appendChild(promoElement);
     });
 }
 
-// Gestionnaire du formulaire de promo
+// Pré-remplir le formulaire pour l'édition
+function editPromoForm(promo) {
+    document.getElementById('promoTitle').value = promo.title;
+    document.getElementById('promoDescription').value = promo.description;
+    document.getElementById('promoId').value = promo.id;
+    document.getElementById('promoImagePreview').innerHTML = `<img src="${promo.imageUrl}" alt="${promo.title}" style="max-width: 200px;">`;
+    document.getElementById('promoForm').style.display = 'block';
+}
+
+// Gestionnaire du formulaire de promo (ajout/modification)
 document.getElementById('promoForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
     try {
-        const promoData = {
-            title: sanitizeInput(document.getElementById('promoTitle').value),
-            description: sanitizeInput(document.getElementById('promoDescription').value)
-        };
-
-        const promoId = document.getElementById('promoId').value;
+        const title = sanitizeInput(document.getElementById('promoTitle').value);
+        const description = sanitizeInput(document.getElementById('promoDescription').value);
         const imageFile = document.getElementById('promoImage').files[0];
-
-        if (imageFile) {
-            if (!imageFile.type.startsWith('image/')) {
-                throw new Error('Le fichier doit être une image');
-            }
-            promoData.image = await getBase64Image(imageFile);
-        } else if (promoId) {
-            // Garder l'image existante en cas d'édition
-            const existingPromo = (await getPromos()).find(p => p.id === parseInt(promoId));
-            promoData.image = existingPromo.image;
-        } else {
-            throw new Error('Une image est requise pour une nouvelle promotion');
-        }
-
+        const promoId = document.getElementById('promoId').value;
         if (promoId) {
-            await editPromo(parseInt(promoId), promoData);
+            // Modification
+            await api.updatePromo(promoId, { title, description, imageFile });
+            alert('Promotion modifiée avec succès !');
         } else {
-            promoData.id = Date.now(); // Utiliser timestamp comme ID unique
-            await addPromo(promoData);
+            // Ajout
+            if (!imageFile) throw new Error('Une image est requise pour une nouvelle promotion');
+            await api.addPromo({ title, description, imageFile });
+            alert('Promotion ajoutée avec succès !');
         }
-
-        // Réinitialiser le formulaire
         this.reset();
         document.getElementById('promoId').value = '';
         document.getElementById('promoImagePreview').innerHTML = '';
         document.getElementById('promoForm').style.display = 'none';
-        
-        // Recharger la liste des promos
         await loadPromosList();
-        alert('Promotion mise à jour avec succès !');
-        
     } catch (error) {
         alert('Erreur : ' + error.message);
     }
@@ -610,13 +564,13 @@ if (localStorage.getItem('isAuthenticated') === 'true') {
 
 // Rendre les fonctions accessibles globalement
 window.editPromoForm = async function(id) {
-    const promos = await getPromos();
+    const promos = await api.getAllPromos();
     const promo = promos.find(p => p.id === id);
     if (promo) {
         document.getElementById('promoTitle').value = promo.title;
         document.getElementById('promoDescription').value = promo.description;
         document.getElementById('promoImagePreview').innerHTML = 
-            `<img src="${promo.image}" alt="${promo.title}" style="max-width: 200px;">`;
+            `<img src="${promo.imageUrl}" alt="${promo.title}" style="max-width: 200px;">`;
         document.getElementById('promoId').value = id;
         document.getElementById('promoForm').style.display = 'block';
     }
@@ -624,7 +578,7 @@ window.editPromoForm = async function(id) {
 
 window.deletePromoConfirm = async function(id) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette promotion ?')) {
-        await deletePromo(id);
+        await api.deletePromo(id);
         await loadPromosList();
     }
 };

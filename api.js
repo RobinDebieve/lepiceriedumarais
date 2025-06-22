@@ -1,5 +1,9 @@
 class ApiService {
     constructor() {
+        // Initialisation Firestore et Storage
+        this.firestore = firebase.firestore();
+        this.storage = firebase.storage();
+
         // Configuration par défaut
         this.API_KEY = '$2a$10$1EDNyeDh8g9NUlSg9MVIa./bjlnUpYkjLCSKpHLAhVJyRjI6J127C';
         this.BIN_ID = '6842aeda8561e97a50204111';
@@ -123,6 +127,73 @@ class ApiService {
             console.error('Error updating data:', error);
             throw error;
         }
+    }
+
+    // Upload d'une image de promo dans Firebase Storage
+    async uploadPromoImage(file) {
+        const storageRef = this.storage.ref();
+        const promoImagesRef = storageRef.child('promos/' + Date.now() + '_' + file.name);
+        await promoImagesRef.put(file);
+        return await promoImagesRef.getDownloadURL();
+    }
+
+    // Ajout d'une promo dans Firestore
+    async addPromo({ title, description, imageFile }) {
+        let imageUrl = '';
+        if (imageFile) {
+            imageUrl = await this.uploadPromoImage(imageFile);
+        }
+        const docRef = await this.firestore.collection('promos').add({
+            title,
+            description,
+            imageUrl
+        });
+        return docRef.id;
+    }
+
+    // Récupérer toutes les promos depuis Firestore
+    async getAllPromos() {
+        const snapshot = await this.firestore.collection('promos').get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+
+    // Supprimer une promo (et son image) dans Firestore/Storage
+    async deletePromo(id) {
+        const docRef = this.firestore.collection('promos').doc(id);
+        const doc = await docRef.get();
+        if (doc.exists) {
+            const data = doc.data();
+            // Supprimer l'image dans Storage si elle existe
+            if (data.imageUrl) {
+                try {
+                    const imageRef = this.storage.refFromURL(data.imageUrl);
+                    await imageRef.delete();
+                } catch (e) {
+                    // L'image n'existe peut-être plus, ignorer l'erreur
+                }
+            }
+        }
+        await docRef.delete();
+    }
+
+    // Modifier une promo (et éventuellement son image)
+    async updatePromo(id, { title, description, imageFile }) {
+        const docRef = this.firestore.collection('promos').doc(id);
+        let imageUrl = undefined;
+        if (imageFile) {
+            // Supprimer l'ancienne image
+            const doc = await docRef.get();
+            if (doc.exists && doc.data().imageUrl) {
+                try {
+                    const imageRef = this.storage.refFromURL(doc.data().imageUrl);
+                    await imageRef.delete();
+                } catch (e) {}
+            }
+            imageUrl = await this.uploadPromoImage(imageFile);
+        }
+        const updateData = { title, description };
+        if (imageUrl) updateData.imageUrl = imageUrl;
+        await docRef.update(updateData);
     }
 }
 
