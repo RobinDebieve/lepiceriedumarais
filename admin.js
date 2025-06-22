@@ -288,9 +288,25 @@ document.getElementById('addRecipeForm').addEventListener('submit', async functi
 
         // Ajouter ou mettre à jour la recette
         if (currentEditIndex === -1) {
-            await addRecipe(formData);
+            await api.addRecipe({
+                name: formData.name,
+                prepTime: formData.prepTime,
+                cookTime: formData.cookTime,
+                servings: formData.servings,
+                ingredients: formData.ingredients,
+                instructions: formData.instructions,
+                imageFile: imageInput.files[0] || null
+            });
         } else {
-            await updateRecipe(currentEditIndex, formData);
+            await api.updateRecipe(currentEditIndex, {
+                name: formData.name,
+                prepTime: formData.prepTime,
+                cookTime: formData.cookTime,
+                servings: formData.servings,
+                ingredients: formData.ingredients,
+                instructions: formData.instructions,
+                imageFile: imageInput.files[0] || null
+            });
         }
 
         // Recharger la liste des recettes
