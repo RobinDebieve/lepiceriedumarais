@@ -1806,4 +1806,20 @@ footer {
 
 .product-list li:hover {
     background-color: rgba(232, 241, 217, 0.1);
+}
+
+/* Flèches du carrousel page accueil uniquement */
+.home-carousel-btn {
+    background-color: var(--primary-color);
+    color: #eaf2d9;
+    border: 2px solid var(--primary-color);
+}
+.home-carousel-btn:hover {
+    background-color: #eaf2d9;
+    color: #f49624;
+    border: 2px solid var(--primary-color);
+}
+.home-carousel-btn:active {
+    background-color: #f49624;
+    color: #eaf2d9;
 } 
