@@ -15,6 +15,9 @@ function closeModal() {
     modal.style.display = "none";
 }
 
+window.openModal = openModal;
+window.closeModal = closeModal;
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Configuration des événements de la modal
     document.getElementById('imageModal').addEventListener('click', function(e) {
