@@ -3,16 +3,6 @@ class ApiService {
         // Initialisation Firestore et Storage
         this.firestore = firebase.firestore();
         this.storage = firebase.storage();
-
-        // Configuration par défaut
-        this.API_KEY = '$2a$10$1EDNyeDh8g9NUlSg9MVIa./bjlnUpYkjLCSKpHLAhVJyRjI6J127C';
-        this.BIN_ID = '6842aeda8561e97a50204111';
-        this.API_URL = `https://api.jsonbin.io/v3/b/${this.BIN_ID}`;
-
-        // Si une configuration externe existe, l'utiliser
-        if (window.APP_CONFIG && window.APP_CONFIG.JSONBIN_API_KEY) {
-            this.API_KEY = window.APP_CONFIG.JSONBIN_API_KEY;
-        }
     }
 
     // Fonction pour compresser une image
