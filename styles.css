@@ -522,7 +522,7 @@ footer {
     text-align: center;
     display: block;
     margin-bottom: 0.5rem;
-    color: var(--white);
+    color: #eaf2d9;
     background-color: var(--primary-color);
 }
 
@@ -534,14 +534,14 @@ footer {
 
 .footer-nav a:hover,
 .footer-social .social-link:hover {
-    background-color: var(--hover-color);
-    color: var(--primary-color);
+    background-color: #eaf2d9;
+    color: #f49624;
 }
 
 .footer-nav a:active,
 .footer-social .social-link:active {
-    background-color: var(--active-color);
-    color: var(--white);
+    background-color: #f49624;
+    color: #eaf2d9;
 }
 
 .footer-social .social-link {
