@@ -181,29 +181,29 @@ async function verifyPassword(inputPassword, hashedPassword) {
 }
 
 // Gestion de l'authentification
-document.getElementById('authForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    try {
-        // Connexion avec Firebase
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-        console.log('Connexion réussie');
-        
-        // Authentification réussie
-        setSession();
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('adminInterface').style.display = 'block';
-        loadRecipes();
-        loadFeaturedProductForm();
-        loadPromosList();
-    } catch (error) {
-        console.error('Erreur de connexion:', error);
-        alert('Identifiants incorrects');
-    }
-});
+const authForm = document.getElementById('authForm');
+if (authForm) {
+    authForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        try {
+            // Connexion avec Firebase
+            const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+            console.log('Connexion réussie');
+            // Authentification réussie
+            setSession();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('adminInterface').style.display = 'block';
+            loadRecipes();
+            loadFeaturedProductForm();
+            loadPromosList();
+        } catch (error) {
+            console.error('Erreur de connexion:', error);
+            alert('Identifiants incorrects');
+        }
+    });
+}
 
 // Vérifier l'état de l'authentification
 firebase.auth().onAuthStateChanged(function(user) {
