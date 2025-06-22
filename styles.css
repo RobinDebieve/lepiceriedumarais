@@ -24,7 +24,6 @@
     --primary-color: #7ba655;
     --hover-color: #eaf2d9;
     --active-color: #41ab8d;
-    --visited-color: #f49623;
     --text-color: #212b1a;
     --background-light: #F5F8F2;
     --white: #e8f1d9;
@@ -95,10 +94,6 @@ h3, .carousel-slide h3 {
     border-radius: 20px;
 }
 
-.nav-links a:visited {
-    color: var(--visited-color);
-}
-
 .carousel-slide h3 {
     font-size: 2rem;
     color: var(--primary-color);
@@ -162,8 +157,7 @@ p, .info-text p, .carousel-slide p {
     content: url('images/logo2.png');
 }
 
-.logo a:active,
-.logo a:visited {
+.logo a:active {
     /* Ne rien changer ici pour le logo */
 }
 
@@ -548,11 +542,6 @@ footer {
 .footer-social .social-link:active {
     background-color: var(--active-color);
     color: var(--white);
-}
-
-.footer-nav a:visited,
-.footer-social .social-link:visited {
-    color: var(--visited-color);
 }
 
 .footer-social .social-link {
@@ -1394,13 +1383,6 @@ footer {
     color: var(--white);
     transform: scale(0.95);
     box-shadow: inset 0 0 10px rgba(33, 43, 26, 0.2);
-}
-
-.auth-button:visited,
-.admin-button:visited,
-.save-button:visited,
-.cancel-button:visited {
-    color: var(--visited-color);
 }
 
 .admin-container {
