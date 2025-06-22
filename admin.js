@@ -1,5 +1,4 @@
 import { ApiService, defaultData } from './api.js';
-import { addRecipe, updateRecipe, deleteRecipe } from './recipes.js';
 
 const api = new ApiService();
 
