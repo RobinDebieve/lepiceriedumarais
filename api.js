@@ -199,26 +199,7 @@ class ApiService {
 
 // Structure des données
 const defaultData = {
-    promos: [
-        {
-            id: 1,
-            title: "Pâtes Soubry Capellini",
-            description: "2+1 Gratuit sur les paquets de Capellini extra fin 500 g — faites le plein de pâtes !",
-            image: "images/promo1.jpg"
-        },
-        {
-            id: 2,
-            title: "Vodka Eristoff",
-            description: "1 achetée = 1 offerte sur la vodka premium ou passion fruit — à consommer avec modération !",
-            image: "images/promo2.jpg"
-        },
-        {
-            id: 3,
-            title: "Oasis Tropical Family Pack",
-            description: "Le 2e pack à moitié prix sur les lots de 6×2 L Oasis Tropical — pour rafraîchir toute la famille !",
-            image: "images/promo3.jpg"
-        }
-    ],
+    promos: [],
     featuredProduct: {
         title: "Glace Kinder Bueno",
         description: "Découvrez notre délicieuse glace Kinder Bueno, un mélange parfait de crème glacée onctueuse et de morceaux croquants de Kinder Bueno. Un véritable délice pour les amateurs de chocolat et de noisettes !",

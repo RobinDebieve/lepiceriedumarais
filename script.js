@@ -86,6 +86,8 @@ async function loadPromos() {
         clone.classList.add('clone');
         carouselContainer.appendChild(clone);
     }
+    // Réinitialiser le carrousel après ajout des slides
+    initializeCarousel();
 }
 
 // Fonction pour initialiser le carousel
