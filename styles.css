@@ -122,7 +122,7 @@ p, .info-text p, .carousel-slide p {
 /* Navigation */
 .navbar {
     background-color: var(--primary-color);
-    padding: 0.5rem 5%;
+    padding: 1rem 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
