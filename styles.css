@@ -1868,31 +1868,25 @@ footer {
 }
 
 @media (max-width: 768px) {
-    h1, .promo h2, .infos h2, .gallery h2 {
-        font-size: 2rem;
+    h1, .products-page h1, .recipes-page h1 {
+        font-size: 2.5rem !important;
     }
-    h2, .featured-product h2, .category-card h2, .about h2 {
+    h2, .featured-product h2, .category-card h2, .about h2, .recipes-page h2, .products-page h2 {
         font-size: 1.7rem !important;
     }
-    h3, .carousel-slide h3 {
-        font-size: 1.2rem;
-    }
-    p, .carousel-slide p, .info-text p, .featured-info p, .product-list li, .about p {
+    p, .carousel-slide p, .info-text p, .featured-info p, .product-list li, .about p, .recipes-page p, .products-page p {
         font-size: 0.95rem !important;
     }
 }
 
 @media (max-width: 480px) {
-    h1, .promo h2, .infos h2, .gallery h2 {
-        font-size: 1.4rem;
+    h1, .products-page h1, .recipes-page h1 {
+        font-size: 2.5rem !important;
     }
-    h2, .featured-product h2, .category-card h2, .about h2 {
+    h2, .featured-product h2, .category-card h2, .about h2, .recipes-page h2, .products-page h2 {
         font-size: 1.7rem !important;
     }
-    h3, .carousel-slide h3 {
-        font-size: 1rem;
-    }
-    p, .carousel-slide p, .info-text p, .featured-info p, .product-list li, .about p {
+    p, .carousel-slide p, .info-text p, .featured-info p, .product-list li, .about p, .recipes-page p, .products-page p {
         font-size: 0.95rem !important;
     }
 } 
