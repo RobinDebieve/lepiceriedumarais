@@ -1016,11 +1016,19 @@ footer {
         gap: 1rem;
         align-items: stretch;
     }
-    .featured-image, .featured-info {
-        width: 100% !important;
-        max-width: 95vw;
-        box-sizing: border-box;
-        min-width: 0;
+    .featured-image {
+        height: auto !important;
+        max-height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .featured-image img {
+        width: 100%;
+        height: 100%;
+        max-height: 220px;
+        object-fit: contain !important;
+        display: block;
         margin: 0 auto;
     }
     .featured-info {
