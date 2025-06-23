@@ -676,6 +676,10 @@ footer {
     .footer-info p {
         justify-content: center;
     }
+
+    h2, .featured-product h2, .category-card h2, .about h2 {
+        font-size: 1.7rem !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -706,6 +710,10 @@ footer {
     }
     .about p {
         font-size: 0.85rem;
+    }
+
+    h2, .featured-product h2, .category-card h2, .about h2 {
+        font-size: 1.7rem !important;
     }
 }
 
@@ -1864,7 +1872,7 @@ footer {
         font-size: 2rem;
     }
     h2, .featured-product h2, .category-card h2, .about h2 {
-        font-size: 1.3rem !important;
+        font-size: 1.7rem !important;
     }
     h3, .carousel-slide h3 {
         font-size: 1.2rem;
@@ -1879,7 +1887,7 @@ footer {
         font-size: 1.4rem;
     }
     h2, .featured-product h2, .category-card h2, .about h2 {
-        font-size: 1.3rem !important;
+        font-size: 1.7rem !important;
     }
     h3, .carousel-slide h3 {
         font-size: 1rem;
