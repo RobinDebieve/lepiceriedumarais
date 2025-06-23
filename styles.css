@@ -1857,4 +1857,34 @@ footer {
     background-color: #f49624;
     border-color: #f49624;
     color: #eaf2d9;
+}
+
+@media (max-width: 768px) {
+    h1, .promo h2, .infos h2, .gallery h2 {
+        font-size: 2rem;
+    }
+    h2, .featured-product h2, .category-card h2, .about h2 {
+        font-size: 1.3rem !important;
+    }
+    h3, .carousel-slide h3 {
+        font-size: 1.2rem;
+    }
+    p, .carousel-slide p, .info-text p, .featured-info p, .product-list li, .about p {
+        font-size: 0.95rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    h1, .promo h2, .infos h2, .gallery h2 {
+        font-size: 1.4rem;
+    }
+    h2, .featured-product h2, .category-card h2, .about h2 {
+        font-size: 1.3rem !important;
+    }
+    h3, .carousel-slide h3 {
+        font-size: 1rem;
+    }
+    p, .carousel-slide p, .info-text p, .featured-info p, .product-list li, .about p {
+        font-size: 0.95rem !important;
+    }
 } 
