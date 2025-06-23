@@ -612,12 +612,20 @@ footer {
     }
     
     .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .gallery-grid img {
+        height: 120px;
     }
     
     .carousel-slide img {
-        width: 300px;
-        height: 300px;
+        width: 200px;
+        height: 200px;
+    }
+    
+    .carousel-btn {
+        display: none !important;
     }
     
     .promo h2, .infos h2, .gallery h2 {
@@ -672,7 +680,11 @@ footer {
 
 @media (max-width: 480px) {
     .gallery-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .gallery-grid img {
+        height: 100px;
     }
     
     h1, .promo h2, .infos h2, .gallery h2 {
