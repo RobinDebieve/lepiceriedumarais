@@ -1032,7 +1032,17 @@ footer {
         margin: 0 auto;
     }
     .featured-info {
-        padding: 1rem;
+        width: 100% !important;
+        max-width: 95vw;
+        min-width: 0;
+        height: auto !important;
+        padding: 1rem 0.5rem !important;
+        margin: 0 auto;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 }
 
