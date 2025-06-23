@@ -43,10 +43,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const burgerMenu = document.querySelector('.burger-menu');
     const navLinks = document.querySelector('.nav-links');
     if (burgerMenu && navLinks) {
-        burgerMenu.addEventListener('click', function() {
+        burgerMenu.addEventListener('click', function(event) {
             navLinks.classList.toggle('active');
             // Animation des barres du menu burger
-            const spans = this.querySelectorAll('span');
+            const spans = event.currentTarget.querySelectorAll('span');
             spans.forEach(span => span.classList.toggle('active'));
         });
         // Fermer le menu si on clique en dehors
