@@ -1017,11 +1017,7 @@ footer {
         align-items: stretch;
     }
     .featured-image {
-        height: auto !important;
-        max-height: 220px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        box-shadow: 0 2px 8px rgba(33, 43, 26, 0.12);
     }
     .featured-image img {
         width: 100%;
