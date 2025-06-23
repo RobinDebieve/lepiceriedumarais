@@ -211,3 +211,6 @@ function initializeCarousel() {
         }
     }
 }
+
+// Export des fonctions utilisées dans d'autres fichiers
+export { openModal, closeModal };
