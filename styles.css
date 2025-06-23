@@ -629,15 +629,15 @@ footer {
     }
     
     .promo h2, .infos h2, .gallery h2 {
-        font-size: 3rem;
-    }
-    
-    h3, .carousel-slide h3 {
         font-size: 1.5rem;
     }
     
-    .carousel-slide p {
+    h3, .carousel-slide h3 {
         font-size: 1rem;
+    }
+    
+    .carousel-slide p {
+        font-size: 0.95rem;
     }
     
     .carousel-btn.prev {
@@ -653,15 +653,15 @@ footer {
     }
 
     .hero-text h2 {
-        font-size: 2rem;
+        font-size: 1.2rem;
     }
 
     .hero-text p {
-        font-size: 1.1rem;
+        font-size: 0.95rem;
     }
 
     .about h2 {
-        font-size: 2.5rem;
+        font-size: 1.2rem;
     }
 
     .product-categories {
@@ -688,15 +688,15 @@ footer {
     }
     
     h1, .promo h2, .infos h2, .gallery h2 {
-        font-size: 2.2rem;
+        font-size: 1.1rem;
     }
     
     h3, .carousel-slide h3 {
-        font-size: 1.8rem;
+        font-size: 0.9rem;
     }
     
     .promo h2, .infos h2, .gallery h2 {
-        font-size: 2.5rem;
+        font-size: 1rem;
     }
 }
 
@@ -865,7 +865,7 @@ footer {
     }
 
     .category-card h2 {
-        font-size: 2rem;
+        font-size: 1.2rem;
         margin: 1.5rem 0;
     }
     
@@ -877,7 +877,7 @@ footer {
 
 @media (max-width: 480px) {
     .category-card h2 {
-        font-size: 1.8rem;
+        font-size: 1rem;
         margin: 1rem 0;
     }
 }
