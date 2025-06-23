@@ -44,12 +44,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const navLinks = document.querySelector('.nav-links');
     if (burgerMenu && navLinks) {
         burgerMenu.addEventListener('click', function(event) {
+            event.stopPropagation();
             navLinks.classList.toggle('active');
-            // Animation des barres du menu burger
             const spans = event.currentTarget.querySelectorAll('span');
             spans.forEach(span => span.classList.toggle('active'));
         });
-        // Fermer le menu si on clique en dehors
+        // Fermer le menu si on clique en dehors du menu burger ET du menu
         document.addEventListener('click', function(event) {
             if (!burgerMenu.contains(event.target) && !navLinks.contains(event.target)) {
                 navLinks.classList.remove('active');
